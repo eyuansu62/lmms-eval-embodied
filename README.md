@@ -11,7 +11,7 @@
 **安装**
 
 ```bash
-git clone <this-repo> && cd lmms-eval-embodied
+git clone https://github.com/eyuansu62/lmms-eval-embodied.git && cd lmms-eval-embodied
 pip install -e .
 ```
 
@@ -65,7 +65,7 @@ backend, and the reporting pipeline.
 ### Install
 
 ```bash
-git clone <this-repo> && cd lmms-eval-embodied
+git clone https://github.com/eyuansu62/lmms-eval-embodied.git && cd lmms-eval-embodied
 pip install -e .
 ```
 
