@@ -4,7 +4,7 @@
 
 ## 中文
 
-基于 [lmms-eval](https://github.com/EvolvingLMMs-Lab/lmms-eval) 的具身智能 VLM 评测套件。新增 20 个 benchmark 接入，并映射到一套 47 项能力体系（世界理解、指令理解、因果与物理推理、失败处理、安全等），一次评测即可得到逐项能力分数。能力体系与每项的来源见 [CAPABILITIES.md](CAPABILITIES.md)。
+基于 [lmms-eval](https://github.com/EvolvingLMMs-Lab/lmms-eval) 的具身智能 VLM 评测套件。新增 20 个 benchmark 接入，并映射到一套 47 项能力体系（世界理解、指令理解、因果与物理推理、失败处理、安全等），一次评测即可得到逐项能力分数。能力体系与每项的来源见 [CAPABILITIES.md](CAPABILITIES.md)，每项为什么这样选见 [CAPABILITY_RATIONALE.md](CAPABILITY_RATIONALE.md)。
 
 上游 lmms-eval 的全部功能保持可用；本仓库在其基础上新增任务、修正 OpenAI 兼容后端的若干问题，并提供报表流程。
 
@@ -55,7 +55,8 @@ An embodied-intelligence evaluation suite for vision-language models, built on
 [lmms-eval](https://github.com/EvolvingLMMs-Lab/lmms-eval). It adds 20 benchmark integrations and maps them onto a
 47-item capability taxonomy (world understanding, instruction understanding, causal and physical reasoning, failure
 handling, safety, ...), so that one run produces a per-capability score table. The taxonomy and the sources of every
-capability are listed in [CAPABILITIES.md](CAPABILITIES.md).
+capability are listed in [CAPABILITIES.md](CAPABILITIES.md); the rationale for each choice is in
+[CAPABILITY_RATIONALE.md](CAPABILITY_RATIONALE.md) (Chinese).
 
 Everything from upstream lmms-eval still works; this repository adds tasks, a few fixes to the OpenAI-compatible
 backend, and the reporting pipeline.

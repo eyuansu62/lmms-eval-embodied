@@ -12,6 +12,7 @@
 - 不同口径（A/B 档全量、C 档类别均衡采样、文本化、LLM judge 等）不混合平均，分行给出；#9 与 #35 按 xlsx 要求拆行。
   Sources with different scoring calibers (full A/B tier, class-balanced C tier, textualized, LLM-judged, …) are not averaged together and appear as separate rows; #9 and #35 are split by design.
 - 来源标 `[C]` 的为 C 档（类别均衡采样）。 Sources marked `[C]` come from the class-balanced C tier.
+- 每项为什么选这些来源见 [CAPABILITY_RATIONALE.md](CAPABILITY_RATIONALE.md)。 The rationale for every source choice is in CAPABILITY_RATIONALE.md (Chinese).
 - 读分前请阅读 `reports/README_capability.md`（已知局限、盲测基线）。 See `reports/README_capability.md` for known limitations and blind baselines before interpreting scores.
 
 ## 能力列表 / Capabilities
