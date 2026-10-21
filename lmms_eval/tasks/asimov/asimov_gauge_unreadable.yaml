@@ -1,0 +1,15 @@
+# ASIMOV · 读表（不可读）：画面质量不足以读数时，应答 unreadable 而不是硬猜
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#46 低视觉质量判断与处置（与 asimov_gauge_readable 等权平均）
+# 切片：gauge_reading/gauge_cannot_read_express_uncertainty.parquet · 131 题全量
+# 单看本切片，全答 unreadable 就是 100% —— 必须和 readable 一起读。
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/asimov/data/asimov_gauge_unreadable.jsonl
+task: "asimov_gauge_unreadable"
+include: _gauge_template_yaml
+
+metadata:
+  version: 0.1
+  note: "#46 低视觉质量判断与处置｜131 题全量｜官方原协议"

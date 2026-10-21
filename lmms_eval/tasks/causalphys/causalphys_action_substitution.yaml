@@ -1,0 +1,43 @@
+# CausalPhys · Intervention/action_substitution
+#
+# 动作替换（P0 #23 干预推理）99 题，替换动作后的结果
+# 论文：https://arxiv.org/html/2606.05966v1
+# 代码：https://github.com/haorentang/CausalPhys
+# 数据：https://huggingface.co/datasets/haorentang/causalphys
+#
+# 媒体按需从 HF 镜像拉取并缓存，不预拉全量。
+# 媒体形态的实测记录见 DATA_SHAPE.md。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/causalphys/data/action_substitution.jsonl
+task: "causalphys_action_substitution"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.causalphys_action_substitution_doc_to_visual
+doc_to_text: !function utils.doc_to_text
+doc_to_target: !function utils.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+process_results: !function utils.process_results
+metric_list:
+  - metric: causalphys_accuracy
+    aggregation: !function utils.aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: "\nAnswer with the option's letter from the given choices directly."
+
+metadata:
+  version: 0.2
+  note: "99 题，替换动作后的结果"

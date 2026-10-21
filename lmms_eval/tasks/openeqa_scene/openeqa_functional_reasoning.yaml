@@ -1,0 +1,14 @@
+# OpenEQA · functional reasoning：区域用途 / 用什么做什么
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#6 场景语义
+# 全量 217 题（130 个场景）里固定种子抽 75 题；每题 16 帧
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/openeqa_scene/data/openeqa_functional_reasoning.jsonl
+task: "openeqa_functional_reasoning"
+include: _default_template_yaml
+
+metadata:
+  version: 0.1
+  note: "#6 场景语义｜functional reasoning｜75 题 × 16 帧｜judge 判语义等价"

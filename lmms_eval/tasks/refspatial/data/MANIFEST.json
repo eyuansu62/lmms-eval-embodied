@@ -1,0 +1,25 @@
+{
+ "refspatial_attribute_reference.jsonl": {
+  "sha256": "b29090936c94007825799e5f45ca28294aa8ea30b6661829479c6a0c33e16e82",
+  "lines": [
+   "82b0cf5da91b6a7e",
+   "d9fdd2924292d316",
+   "e47a2c8d8697739e"
+  ]
+ },
+ "refspatial_attribute_reference_indices.json": {
+  "sha256": "078723a6b97e0efcb6089cca625772d3326ef89922613aa2cea566b83546a5af"
+ },
+ "refspatial_ordinal_reference.jsonl": {
+  "sha256": "49c2268776e467e80383207f8d2ec9c6e4600b3ede55a53d4022243757837ad3",
+  "lines": [
+   "c6b5b3e3a1cd5ac5",
+   "c6bc600ac3ebaa3f",
+   "268824a7bc9bcf4a",
+   "dc6079136c04e72a"
+  ]
+ },
+ "refspatial_ordinal_reference_indices.json": {
+  "sha256": "5c80928631b913e94505e04ba88150792e34a56ff560942eada3fd26106fd9c5"
+ }
+}

@@ -1,0 +1,56 @@
+# CausalPhys · 多跳因果（P0 #21 因果链推理）
+#
+# 从 能力体系（CAPABILITIES.md） 条目 #23 的指定目录中，按**因果图链长**筛出的题：
+#
+#   Intervention/spatial_manipulation  151 题 -> 80 入选
+#   Intervention/temporal_shifting     149 题 -> 83 入选
+#   Intervention/action_substitution    99 题 ->  0 入选（最长链只有 2 条边）
+#   合计 399 -> 163
+#
+# 筛题标准：因果节点（event/attribute）构成的 DAG 上，最长路径 **>= 3 条边**
+# （即链上存在中间环节，形如 A→B→C→D）。
+#
+# 为什么是 3 条边而不是 2 条：文档明确提醒
+#   "仅 graph 有长度 2 路径不足以证明问题要求多跳"
+# 长度 2 路径正是 A→B→C。选 2 条边会放进大量结构上有传递、但题目并不要求
+# 多跳推理的样本。
+#
+# 注意 object 类型节点（场景参与者）不计入链长 —— 它们会出现在链条上
+# （如示例里的 cloth → a1），但不是因果环节。
+#
+# 生成方式：python build_multihop.py
+# 数据：lmms_eval/tasks/causalphys/data/multihop_pool.jsonl
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/causalphys/data/multihop_pool.jsonl
+task: "causalphys_multi_hop"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.causalphys_multi_hop_doc_to_visual
+doc_to_text: !function utils.doc_to_text
+doc_to_target: !function utils.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+process_results: !function utils.process_results
+metric_list:
+  - metric: causalphys_accuracy
+    aggregation: !function utils.aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: "\nAnswer with the option's letter from the given choices directly."
+
+metadata:
+  version: 0.1
+  note: "163 题；按因果图链长 >=3 条边筛选；对应 P0 #23 跨多环节因果推理"

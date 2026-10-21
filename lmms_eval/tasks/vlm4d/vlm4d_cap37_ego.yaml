@@ -1,0 +1,35 @@
+# VLM4D 真实视频 —— 能力表 #37 轨迹理解与预测（当前运动方向部分）
+#
+# 数据：shijiezhou/VLM4D（ICCV 2025，MIT），由 build_vlm4d_cap37.py 生成。本切片：ego4d 第一人称 150。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/vlm4d/data/vlm4d_cap37_ego.jsonl
+task: "vlm4d_cap37_ego"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils_cap37.doc_to_visual
+doc_to_text: !function utils_cap37.doc_to_text
+doc_to_target: !function utils_cap37.doc_to_target
+process_results: !function utils_cap37.process_results
+
+metric_list:
+  - metric: vlm4d_cap37_accuracy
+    aggregation: !function utils_cap37.agg_accuracy
+    higher_is_better: true
+  - metric: vlm4d_cap37_parse_rate
+    aggregation: !function utils_cap37.agg_parse_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+metadata:
+  version: 0.1
+  note: "#37 轨迹理解与预测｜VLM4D ego"

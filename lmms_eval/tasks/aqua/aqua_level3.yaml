@@ -1,0 +1,14 @@
+# AQuA · Level 3：目标多且同样显著，应请对方澄清
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#47 知识检索与求助（询问必要信息一层）
+# 测试集该等级 900 题里固定种子抽 37 题
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/aqua/data/aqua_level3.jsonl
+task: "aqua_level3"
+include: _default_template_yaml
+
+metadata:
+  version: 0.1
+  note: "#47 询问必要信息｜Level 3｜37 题｜judge 判策略"

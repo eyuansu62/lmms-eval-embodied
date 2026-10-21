@@ -1,0 +1,14 @@
+# AQuA · Level 1：有指代词但只有一个主目标，应先说清指代再回答
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#47 知识检索与求助（询问必要信息一层）
+# 测试集该等级 900 题里固定种子抽 38 题
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/aqua/data/aqua_level1.jsonl
+task: "aqua_level1"
+include: _default_template_yaml
+
+metadata:
+  version: 0.1
+  note: "#47 询问必要信息｜Level 1｜38 题｜judge 判策略"

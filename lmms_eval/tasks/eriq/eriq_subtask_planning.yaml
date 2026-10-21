@@ -1,0 +1,24 @@
+# ERIQ · 子任务规划：把任务拆成有序步骤
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#28 子任务分解
+# 切片：QA_SUBTASK_PLANNING.json · 原始 600 题 -> 采样 148 题
+#
+# 采样口径见 sampling.py（A 档「切法 A」：每 benchmark 预算 800，
+# 8 个子任务按规模等比分配）。单任务 n=148，
+# 准确率的 95% 置信半宽约 ±8 个百分点，报数时别把小任务波动当结论。
+#
+# ⚠️ 真实答案在 conversations 的 gpt 轮，**不是** gt_answer 字段（该字段全空）。
+#   图片路径需补 images/ 前缀，已在 utils._resolve_image 里容错处理。
+
+dataset_path: KineMind/ERIQ
+dataset_kwargs:
+  data_files:
+    test: QA_SUBTASK_PLANNING.json
+task: "eriq_subtask_planning"
+test_split: test
+include: _default_template_yaml
+process_docs: !function sampling.eriq_subtask_planning_process_docs
+
+metadata:
+  version: 0.1
+  note: "#28 子任务分解｜原始 600 题，采样 148 题"

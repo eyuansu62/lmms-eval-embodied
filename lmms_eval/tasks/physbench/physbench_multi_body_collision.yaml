@@ -1,0 +1,53 @@
+# PhysBench · 多体交互预测（P0 #40）
+#
+# 筛选切片：task_type=="dynamics" AND sub_type=="collision" AND ability_type=="prediction" AND 保留多物体
+# 题数：350
+#
+# 论文：https://arxiv.org/abs/2501.16411
+# 代码：https://github.com/physical-superintelligence-lab/PhysBench
+# 数据：https://huggingface.co/datasets/lmms-lab-eval/PhysBench
+#
+# ⚠️ 这是**按 能力体系（CAPABILITIES.md） 条目筛选的切片**，不是官方子集。
+#    筛选逻辑见 build_physbench_slices.py。
+
+# ⚠️ **判据含启发式**：用"题干出现≥2 个颜色词"判断是否多物体。
+#    这是代理判据，不是文档认可的字段 —— 未写颜色的多物体题会被误判。
+#
+# 数据源核对：HF 的 full split（10002 条）已与官方 test_answer.json
+# 逐行比对 4 字段，**全部一致**。切片由 full split 生成。
+#
+# 媒体：PhysBench 的 image.zip / video.zip 需自行下载并解压到
+#       HF cache 的 physbench/ 目录下（见 utils._resolve_media_path）。
+#
+# 注：切片字段与原 parquet 一致，直接复用本目录的 utils.py 判分。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/physbench/data/physbench_multi_body_collision.jsonl
+task: "physbench_multi_body_collision"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.physbench_doc_to_visual
+doc_to_text: !function utils.physbench_doc_to_text
+doc_to_target: "answer"
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  do_sample: false
+
+process_results: !function utils.physbench_process_results
+metric_list:
+  - metric: physbench_accuracy
+    aggregation: !function utils.physbench_aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    post_prompt: "\nAnswer with the option's letter from the given choices directly. You can only answer one letter from A, B, C, or D."
+
+metadata:
+  version: 0.2
+  note: 'P0 #40 多体交互预测；350 题；判据 task_type=="dynamics" AND sub_type=="collision" AND ability_type=="prediction" AND 保留多物体；判据含启发式'

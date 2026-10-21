@@ -1,0 +1,62 @@
+# EAI · BEHAVIOR 目标解释：自然语言目标 → 符号化目标状态
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#16 目标理解（P0）
+# 切片：behavior_eval goal_interpretation · 100 题全量（官方 eai-eval 1.0.5 资源）
+# ⚠️ 纯文本（官方原协议），不看图；能力表口径标「B档·纯文本」
+# 判分逐行移植官方 evaluate_results.py，主分 eai_f1 = 官方 micro F1；
+# 报表 summary_*.csv 是逐题平均，对应 eai_f1_macro，两者不相等。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/eai/data/eai_behavior_goal.jsonl
+task: "eai_behavior_goal"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.eai_doc_to_visual
+doc_to_text: !function utils.eai_doc_to_text
+doc_to_target: !function utils.eai_doc_to_target
+process_results: !function utils.eai_process_results
+
+metric_list:
+  - metric: eai_f1
+    aggregation: !function utils.eai_aggregate_f1
+    higher_is_better: true
+  - metric: eai_precision
+    aggregation: !function utils.eai_aggregate_precision
+    higher_is_better: true
+  - metric: eai_recall
+    aggregation: !function utils.eai_aggregate_recall
+    higher_is_better: true
+  - metric: eai_state_f1
+    aggregation: !function utils.eai_aggregate_state_f1
+    higher_is_better: true
+  - metric: eai_relation_f1
+    aggregation: !function utils.eai_aggregate_relation_f1
+    higher_is_better: true
+  - metric: eai_f1_macro
+    aggregation: !function utils.eai_aggregate_f1_macro
+    higher_is_better: true
+  - metric: eai_f1_lenient
+    aggregation: !function utils.eai_aggregate_f1_lenient
+    higher_is_better: true
+  - metric: eai_parse_rate
+    aggregation: !function utils.eai_aggregate_parse_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: ""
+
+metadata:
+  version: 0.1
+  note: "#16 目标理解｜BEHAVIOR 100 题全量｜纯文本·官方原协议"

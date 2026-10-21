@@ -1,0 +1,34 @@
+# RoboBench · P0 #2 客体可供性感知（动态）
+#
+# 数据: LeoFan01/RoboBench (HF), 图片按需下载至 media/
+# 论文: RoboBench (2025)  https://arxiv.org/html/2510.17801v2
+# Prompt: 官方前缀（data/system_prompt.json），见 utils.doc_to_text
+# 由 gen_robobench_yamls.py 生成，不要手改。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/robobench/data/robobench_dynamic_affordance.jsonl
+task: "robobench_dynamic_affordance"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.doc_to_visual
+doc_to_text: !function utils.doc_to_text
+doc_to_target: !function utils.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  do_sample: false
+
+process_results: !function utils.process_results
+metric_list:
+  - metric: robobench_accuracy
+    aggregation: !function utils.aggregate_results
+    higher_is_better: true
+
+metadata:
+  # 0.2：改用官方 prompt。0.1 的结果（只发裸题干）与之不可比。
+  version: 0.2
+  note: "B-tier RoboBench · P0 #2 客体可供性感知（动态）"

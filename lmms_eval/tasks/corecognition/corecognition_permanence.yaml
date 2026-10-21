@@ -1,0 +1,36 @@
+# CoreCognition · permanence —— #35 物体恒常性 · 恒常性（IntPhys 2 之外的第二来源）
+#
+# williamium/CoreCognition（Apache-2.0，ICML 2025）frame-combined：每题一张图（视频题为官方多帧拼图），
+# 官方 prompt。是非题 YES/NO 等量采样（原始偏 YES），选择题全取；见 build_corecognition.py。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/corecognition/data/corecognition_permanence.jsonl
+task: "corecognition_permanence"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils_cap35.doc_to_visual
+doc_to_text: !function utils_cap35.doc_to_text
+doc_to_target: !function utils_cap35.doc_to_target
+process_results: !function utils_cap35.process_results
+
+metric_list:
+  - metric: corecognition_accuracy
+    aggregation: !function utils_cap35.agg_accuracy
+    higher_is_better: true
+  - metric: corecognition_parse_rate
+    aggregation: !function utils_cap35.agg_parse_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+metadata:
+  version: 0.1
+  note: "#35 物体恒常性 · 恒常性（IntPhys 2 之外的第二来源）"

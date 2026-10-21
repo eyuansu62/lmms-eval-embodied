@@ -1,0 +1,19 @@
+# ASIMOV · 平台可行性：给定机器人能力说明（apollo2 双臂、底座固定），判断能不能执行用户指令
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#1 本体能力可供性感知（最贴「当前执行器可以执行什么任务」）
+# 切片：vla_feasibility/vla_feasibility_extended_di_vla_protocol.parquet · 400 题全量（不采样）
+#
+# 可执行 200 / 不可执行 200。不可执行的按原因分组（样本里的 group 字段）：
+#   PARTIAL_FEASIBILITY 68 · LOCOMOTION 43 · DECOMPOSITION_TRAP 32 ·
+#   CONDITIONAL_SENSORY 31 · TOOL_USE 13 · VERB_VIOLATION 9 · 其它 4
+# 盲猜基线 50%。
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/asimov/data/asimov_vla_feasibility.jsonl
+task: "asimov_vla_feasibility"
+include: _default_template_yaml
+
+metadata:
+  version: 0.1
+  note: "#1 本体能力可供性感知｜400 题全量｜文本化口径（官方为 tool-call）"

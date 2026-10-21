@@ -1,0 +1,43 @@
+# MV-RoboBench · 轨迹选择（P1 #30）
+#
+# 筛选切片：domain in {agiworld, bridgev2} / task == robotic_trajectory_selection
+# 题数：200
+#
+# 数据：https://huggingface.co/datasets/AaronFengZY24/MV_Robobench
+# 论文：MV-RoboBench (2025)
+#
+# 媒体：每道题 3 张视图（view1-3.png），通过 hf_hub_download 按需下载，
+#        缓存至 ~/.cache/lmms_eval/mvrobobench/
+# 选项：5 选 1（A/B/C/D/E），字段 options+correct
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/mvrobobench/data/mvrb_trajectory.jsonl
+task: "mvrb_trajectory"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.doc_to_visual
+doc_to_text: !function utils.doc_to_text
+doc_to_target: !function utils.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  do_sample: false
+
+process_results: !function utils.process_results
+metric_list:
+  - metric: mvrb_accuracy
+    aggregation: !function utils.aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: "\nAnswer with the option letter only (A, B, C, D, or E)."
+
+metadata:
+  version: 0.1
+  note: "P1 #30 轨迹选择；200 题；B-tier MV-RoboBench"

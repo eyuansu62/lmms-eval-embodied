@@ -1,0 +1,54 @@
+# PhysBench · 客体物理属性（P0 #5）
+#
+# 筛选切片：task_type=="property" AND sub_type IN {"mass","attribute"}
+# 题数：1702
+#
+# 论文：https://arxiv.org/abs/2501.16411
+# 代码：https://github.com/physical-superintelligence-lab/PhysBench
+# 数据：https://huggingface.co/datasets/lmms-lab-eval/PhysBench
+#
+# ⚠️ 这是**按 能力体系（CAPABILITIES.md） 条目筛选的切片**，不是官方子集。
+#    筛选逻辑见 build_physbench_slices.py。
+
+# 说明：原 #35 object_permanence（sub_type==mass，293 题）是本切片的**子集**，
+#    2026-10-16 已删除该切片：它 100% 含于本切片，且不含守恒/遮挡题，不构成
+#    独立的「物体恒常性」评测（见 能力体系（CAPABILITIES.md） #35 行的边界说明）。
+#
+# 数据源核对：HF 的 full split（10002 条）已与官方 test_answer.json
+# 逐行比对 4 字段，**全部一致**。切片由 full split 生成。
+#
+# 媒体：PhysBench 的 image.zip / video.zip 需自行下载并解压到
+#       HF cache 的 physbench/ 目录下（见 utils._resolve_media_path）。
+#
+# 注：切片字段与原 parquet 一致，直接复用本目录的 utils.py 判分。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/physbench/data/physbench_property_object.jsonl
+task: "physbench_property_object"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.physbench_doc_to_visual
+doc_to_text: !function utils.physbench_doc_to_text
+doc_to_target: "answer"
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  do_sample: false
+
+process_results: !function utils.physbench_process_results
+metric_list:
+  - metric: physbench_accuracy
+    aggregation: !function utils.physbench_aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    post_prompt: "\nAnswer with the option's letter from the given choices directly. You can only answer one letter from A, B, C, or D."
+
+metadata:
+  version: 0.2
+  note: 'P0 #5 客体物理属性；1702 题；判据 task_type=="property" AND sub_type IN {"mass","attribute"}'

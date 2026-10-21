@@ -1,0 +1,47 @@
+# MomaGraph-Bench · Effect Prediction
+#
+# 具身智能 VLM 评测 —— 效果预测。来自 能力体系（CAPABILITIES.md） 的 P0 条目 #18 与 #31。
+# 论文/代码：https://github.com/HybridRobotics/MomaGraph
+# 数据：https://huggingface.co/datasets/cheryyunl/MomaGraph-Bench
+#
+# 筛选：type == "Effect Prediction"，168 题。
+# 两张表条目（#18、#31）指向同一集合，故共用一个 task。
+#
+# 文档提示：效果预测不是完整条件分支/全部约束检查，不能用此一类替代整项能力。
+#
+# 同目录下另有全量基线 task：momagraph_bench（1315 题）。
+
+dataset_path: parquet
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/momagraph_bench/data/train-*.parquet
+task: "momagraph_effect_prediction"
+test_split: test
+output_type: generate_until
+
+process_docs: !function utils.process_docs_effect_prediction
+doc_to_visual: !function utils.doc_to_visual
+doc_to_text: !function utils.doc_to_text
+doc_to_target: !function utils.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+process_results: !function utils.process_results
+metric_list:
+  - metric: momagraph_accuracy
+    aggregation: !function utils.aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: "\nAnswer with the option's letter from the given choices directly."
+
+metadata:
+  version: 0.2
+  note: "168 题；type==Effect Prediction；对应 P0 #18 单体/多体状态理解、#31 约束满足检查"

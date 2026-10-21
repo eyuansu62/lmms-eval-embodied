@@ -1,0 +1,32 @@
+# OpenEQA · #6 场景语义（被 openeqa_world_knowledge / openeqa_functional_reasoning include）
+#
+# 数据：thomas-yanxin/open-eqa-mirror（OpenEQA，CVPR 2024）；本地 jsonl 由 build_openeqa_jsonl.py 生成。
+# ⚠️ 输入是每题 16 帧（本地从 32 帧均匀抽取），不是官方完整探索视频；judge 用内部路由的 qwen3.8-max。
+# 数据 2023 年发布，可能有训练污染。报表口径标「B档·帧序列」。
+
+dataset_path: json
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.openeqa_doc_to_visual
+doc_to_text: !function utils.openeqa_doc_to_text
+doc_to_target: !function utils.openeqa_doc_to_target
+process_results: !function utils.openeqa_process_results
+
+metric_list:
+  - metric: openeqa_accuracy
+    aggregation: !function utils.openeqa_aggregate_accuracy
+    higher_is_better: true
+  - metric: openeqa_judge_rate
+    aggregation: !function utils.openeqa_aggregate_judge_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+metadata:
+  version: 0.1

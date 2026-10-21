@@ -1,0 +1,60 @@
+# ERIQ · 共享配置（被 8 个 eriq_*.yaml include）
+#
+# 只放各切片共通的部分；每个切片自己的 data_files 与 process_docs 在各自
+# 的 yaml 里给出（后者的键覆盖这里，见 utils.load_yaml_config 的 include 语义）。
+#
+# 数据：KineMind/ERIQ（官方 README 写 agibot-research/ERIQ，已改名，别写死）
+# 论文：https://arxiv.org/abs/2412.24125  代码：github.com/GenieReasoner/ERIQ
+
+dataset_path: KineMind/ERIQ
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.eriq_doc_to_visual
+doc_to_text: !function utils.eriq_doc_to_text
+doc_to_target: !function utils.eriq_doc_to_target
+process_results: !function utils.eriq_process_results
+
+metric_list:
+  # 严格口径 = 官方 eval_code/eval_hf.py 的 preprocess_answer，用于对读
+  # README 里那 6 个 baseline（GPT-4o-mini 77.61 / Gemini-2.5-pro 80.55 等）。
+  # 注意该正则实测会「取错字母」（'Based on ...' -> B、'Answer: C' -> A），
+  # 所以两个口径都要报，不能只看这一个。
+  - metric: eriq_accuracy
+    aggregation: !function utils.eriq_aggregate_accuracy
+    higher_is_better: true
+  # 宽松口径：共享 mcq_extract 的优先级抽取。与严格口径的差值就是
+  # 「答对但格式不合规」的量，用来区分能力问题与格式问题。
+  - metric: eriq_accuracy_lenient
+    aggregation: !function utils.eriq_aggregate_accuracy_lenient
+    higher_is_better: true
+  # 第三口径：Yes/No → 字母归一。
+  # success_detection / action_understanding / subtask_planning 三个子任务的选项
+  # 字面是 `A.Yes / B.No`，但 gt 是字母，官方判分器只认 `^([A-F])` —— 模型按
+  # post_prompt 回 Yes/No 就被判 0。这里把 Yes->A / No->B 换算后重判，
+  # 映射从**题干原文**解析（不是从 gt 分布反推）。
+  # 用途：eriq_accuracy_yn - eriq_accuracy = 「答案对但格式与官方判分器不兼容」的量。
+  # 官方口径原样保留，与 README 6 个 baseline 的可比性不受影响。
+  - metric: eriq_accuracy_yn
+    aggregation: !function utils.eriq_aggregate_accuracy_yn
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    # ERIQ 的选项已经是行首 `A. / B. / C. / D.`，不需要再排版；
+    # MISTAKE_EXISTENCE 是 `(Yes/No)` 结尾、没有选项行的特例，这句一并覆盖。
+    post_prompt: "\nAnswer with the option's letter from the given choices directly. If the question is a Yes/No question, answer Yes or No."
+  neo_ov:
+    pre_prompt: ""
+    post_prompt: "\nAnswer with the option's letter from the given choices directly. If the question is a Yes/No question, answer Yes or No."
+
+metadata:
+  version: 0.1

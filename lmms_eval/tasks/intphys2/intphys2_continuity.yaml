@@ -1,0 +1,14 @@
+# IntPhys 2 · continuity：物体在遮挡物后瞬移 / 轨迹不连续
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#38 运动连续性
+# Main 集该 condition 全量 240 个视频（60 个场景 × 4：2 可能 + 2 不可能），不抽样
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/intphys2/data/intphys2_continuity.jsonl
+task: "intphys2_continuity"
+include: _default_template_yaml
+
+metadata:
+  version: 1.0
+  note: "#38 运动连续性｜IntPhys 2 continuity｜240 视频 × 11–15 帧｜官方 prompt1"

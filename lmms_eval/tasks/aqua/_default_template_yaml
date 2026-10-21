@@ -1,0 +1,32 @@
+# AQuA · #47 询问必要信息（被 aqua_level0..3 include）
+#
+# 数据：jihyoung/AQuA test（CC BY 4.0，ICLR 2026）；本地 jsonl 由 build_aqua_jsonl.py 生成。
+# 作答用论文附录 K 的策略性提示词；主分 = judge 判出的策略等级与真值一致的比例。
+# ⚠️ judge 是内部路由上的 qwen3.8-max（论文用 GPT-5-mini），报表口径标「B档·judge」。
+
+dataset_path: json
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.aqua_doc_to_visual
+doc_to_text: !function utils.aqua_doc_to_text
+doc_to_target: !function utils.aqua_doc_to_target
+process_results: !function utils.aqua_process_results
+
+metric_list:
+  - metric: aqua_strategy_accuracy
+    aggregation: !function utils.aqua_aggregate_strategy
+    higher_is_better: true
+  - metric: aqua_judge_rate
+    aggregation: !function utils.aqua_aggregate_judge_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+metadata:
+  version: 0.1

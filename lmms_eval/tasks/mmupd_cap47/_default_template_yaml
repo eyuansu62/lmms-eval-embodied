@@ -1,0 +1,44 @@
+# MM-UPD · #47 自我检视（被 mmupd_aad / mmupd_iasd / mmupd_ivqd include）
+#
+# 数据：MM-UPD/MM-UPD（Apache-2.0），本地 jsonl 由 build_mmupd_jsonl.py 生成。
+# ⚠️ 只问主版本、不做官方循环评测；GPT 兜底抽取换成确定性抽取。报表口径标「非循环」。
+# 主指标 mmupd_dual_accuracy：同一题的正常版与无解版都对才算对。
+
+dataset_path: json
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.mmupd_doc_to_visual
+doc_to_text: !function utils.mmupd_doc_to_text
+doc_to_target: !function utils.mmupd_doc_to_target
+process_results: !function utils.mmupd_process_results
+
+metric_list:
+  - metric: mmupd_dual_accuracy
+    aggregation: !function utils.mmupd_aggregate_dual
+    higher_is_better: true
+  - metric: mmupd_standard_accuracy
+    aggregation: !function utils.mmupd_aggregate_standard
+    higher_is_better: true
+  - metric: mmupd_upd_accuracy
+    aggregation: !function utils.mmupd_aggregate_upd
+    higher_is_better: true
+  - metric: mmupd_parse_rate
+    aggregation: !function utils.mmupd_aggregate_parse_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    # 上游 mmaad_instruction.yaml 的 post_prompt 原文
+    post_prompt: "\nIf all the options are incorrect, answer \"F. None of the above\"."
+
+metadata:
+  version: 0.1

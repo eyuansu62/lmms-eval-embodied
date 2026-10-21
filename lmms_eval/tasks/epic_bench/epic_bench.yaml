@@ -1,0 +1,53 @@
+# EPIC-Bench — Visual Grounding across Manipulation, Navigation, TargetLocalization
+#
+# Dataset: rxc205/EPIC-Bench (HF, train split, 6661 rows)
+# Paper: EPIC-Bench (2025) https://arxiv.org/abs/2501.xxxxx
+#
+# Each sample: scene image + reference object image + binary GT mask + text label
+# Output type: generate_until (predict (x, y) pixel coordinates)
+# Scoring: point-in-mask hit rate
+#
+# Categories and sizes:
+#   TargetLocalization: 3954  (24 subtypes)
+#   Navigation:         1245  (GroundDetection, FeasiblePath, VisualMatching)
+#   Manipulation:        462  (AffordanceRegion, PlacementRegion, ContactRelationship)
+
+dataset_path: rxc205/EPIC-Bench
+test_split: train
+task: epic_bench
+output_type: generate_until
+# epic 的判分要用原图尺寸和 GT mask 算命中率，而这两列都是 Image 类型。
+# 不加这行，task.py 的 dataset_no_image 会把它们删掉，process_results 收到
+# mask=None、w=h=1，命中恒为 False —— 分数恒 0 且不报错。
+# （refspatial 踩过同一个坑，注释里写的是报 KeyError；epic 这里取不到就静默判 0。）
+process_results_use_image: true
+
+# 模型的 (x, y) 是原图像素还是 0-1000 归一化，各模型不一致：
+# 3B 吐像素，qwen3.8-27b / doubao 吐 0-1000。见 utils.py 的 EPIC_COORD_FORMAT。
+process_docs: !function lmms_eval.tasks.c_tier_sampling.epic_process_docs
+doc_to_visual: !function utils.epic_doc_to_visual
+doc_to_text: !function utils.epic_doc_to_text
+doc_to_target: !function utils.epic_doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  do_sample: false
+
+process_results: !function utils.epic_process_results
+metric_list:
+  - metric: epic_accuracy
+    aggregation: !function utils.epic_aggregate_accuracy
+    higher_is_better: true
+  - metric: epic_parse_ok
+    aggregation: !function utils.epic_aggregate_parse_rate
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: ""
+
+metadata:
+  version: 0.1
+  note: "C-tier EPIC-Bench; visual grounding; point-in-mask scoring; 6661 items"

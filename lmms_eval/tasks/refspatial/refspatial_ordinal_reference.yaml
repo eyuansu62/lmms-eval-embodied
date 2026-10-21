@@ -1,0 +1,50 @@
+# RefSpatial-Expand-Bench · 序数指代（P0 #20）
+#
+# 筛选切片：id IN {0,2,8,13}
+# 题数：4
+# 样本：id=0 "third car" / id=2 "fifth car" / id=8 "third building" / id=13 "second closest tree"
+#
+# 数据：https://huggingface.co/datasets/JingkunAn/RefSpatial-Expand-Bench
+# 论文：https://arxiv.org/abs/2507.22076
+#
+# ⚠️ **样本量极小（4 条），分数仅作定性参考**，单题波动 ±14% 以上。
+#    文档「子集定位」#19/#20 只给了 id 白名单，并注明
+#    "其余 location 需审标后加入" —— 那 233 条需人工审标，脚本无法代劳。
+#
+# ⚠️ **数据源与内置 task 不同**：
+#    内置 refspatial_* 用 BAAI/RefSpatial-Bench，
+#    本切片按文档改用 JingkunAn/RefSpatial-Expand-Bench（split=location）。
+#
+# 过滤逻辑见 utils_filter.py（按 id 白名单），判分复用本目录原有 utils.py。
+
+dataset_path: parquet
+dataset_kwargs:
+  data_files:
+    location: lmms_eval/tasks/refspatial/data/refspatial_expand_bench.parquet
+full_docs: true
+# RefSpatial 的判分要用 mask 算命中率，而 mask 是 Image 类型列。
+# 不加这行，task.py 会把 dataset_no_image 里所有 Image 列删掉，
+# 导致 process_results 报 KeyError: 'mask'。
+process_results_use_image: true
+output_type: generate_until
+task: "refspatial_ordinal_reference"
+test_split: location
+
+process_docs: !function utils_filter.process_docs_ordinal_reference
+doc_to_visual: !function utils.refspatial_doc_to_visual
+doc_to_text: !function utils.refspatial_doc_to_text
+doc_to_target: ""
+process_results: !function utils.refspatial_process_results
+
+metric_list:
+  - metric: refspatial_acc
+    aggregation: !function utils.refspatial_aggregate_results
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+
+metadata:
+  version: 0.1
+  prompt_suffix_type: original
+  note: 'P0 #20 序数指代；4 条；判据 id IN {0,2,8,13}；样本量极小仅供参考'

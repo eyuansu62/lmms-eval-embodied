@@ -1,0 +1,42 @@
+# Point-It-Out (PIO) · P0 #19 属性指代（s1/restriction+object_part）
+#
+# 输出类型: generate_until (坐标定位)
+# 判分: 点落入目标 polygon 计为命中
+# 数据: GitHub xavihart/PIO, s1s2.json
+# 图片: 按需下载至 ~/.cache/lmms_eval/pio/images_s1s2/
+# 题数: 95
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/pio/data/pio_attribute_reference.jsonl
+task: "pio_attribute_reference"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.doc_to_visual
+doc_to_text: !function utils.doc_to_text
+doc_to_target: !function utils.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  do_sample: false
+
+process_results: !function utils.process_results
+metric_list:
+  - metric: pio_accuracy
+    aggregation: !function utils.aggregate_accuracy
+    higher_is_better: true
+  - metric: pio_parse_ok
+    aggregation: !function utils.aggregate_parse_rate
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: "\nProvide the coordinates of the target point as (x, y), where x and y are NORMALIZED to the range 0 to 1 (0,0 is the top-left corner, 1,1 is the bottom-right corner), not pixel values. Output only the coordinates."
+
+metadata:
+  version: 0.1
+  note: "B-tier PIO · P0 #19 属性指代（s1/restriction+object_part）"

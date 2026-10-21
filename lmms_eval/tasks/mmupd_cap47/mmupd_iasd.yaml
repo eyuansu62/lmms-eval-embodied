@@ -1,0 +1,14 @@
+# MM-UPD · Incompatible Answer Set Detection：无解版的选项换成与题目无关的一组
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#47 知识检索与求助（自我检视一层）
+# 17 道原题 × 2 版（正常 / 无解）= 34 次请求；固定种子抽自主版本成对的原题
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/mmupd_cap47/data/mmupd_iasd.jsonl
+task: "mmupd_iasd"
+include: _default_template_yaml
+
+metadata:
+  version: 0.1
+  note: "#47 自我检视｜17 道原题（双重准确率）｜非循环评测"

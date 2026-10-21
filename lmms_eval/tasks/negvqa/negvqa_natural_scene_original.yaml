@@ -1,0 +1,50 @@
+# NegVQA · 原题（筛选切片）
+#
+# 否定理解评测 —— 视觉否定问答。ACL 2025 Findings。
+# 论文：https://arxiv.org/abs/2505.22946
+# 代码：https://github.com/yuhui-zh15/NegVQA
+# 数据：https://huggingface.co/datasets/yuhuizhang/NegVQA
+#
+# ⚠️ 这是**自定义评测切片**，不是官方子集。
+#   从 NegVQA dev 的 1000 例中严格筛出 91 例 —— 详见 screen_negvqa.py 与 README。
+#
+# 与 negvqa_natural_scene_negated 是**同一批样本的两问**：
+#   本 task 问原题，那个问否定题。成对全对率需两者结果配对计算
+#   （用 tools/pair_negvqa_results.py）。
+#
+# 官方评测也是两问分开跑的（evaluate_models.sh 的 NegVQA-original / NegVQA-negated）。
+
+dataset_path: parquet
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/negvqa/data/dev-00000-of-00001.parquet
+task: "negvqa_natural_scene_original"
+test_split: test
+output_type: generate_until
+
+process_docs: !function utils_filter.process_docs_screened
+doc_to_visual: !function utils.doc_to_visual_original
+doc_to_text: !function utils.doc_to_text_original
+doc_to_target: !function utils.doc_to_target_original
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+process_results: !function utils.process_results_original
+metric_list:
+  - metric: negvqa_original_accuracy
+    aggregation: !function utils.aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: "\nAnswer with the option's letter from the given choices directly."
+
+metadata:
+  version: 0.1
+  note: "91 题（dev 严格筛选切片）；问原题；配对指标见 README"

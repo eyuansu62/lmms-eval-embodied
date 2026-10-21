@@ -1,0 +1,50 @@
+# EgoTaskQA · 单体/多体状态理解（P0 #27）
+#
+# 筛选切片：type 含 descriptive AND semantic ∈ {state, change} AND structural == verify
+# 题数：200（state / change 各 100，seed 42；全量池 8133 见 data/_full/）
+# 构建：build_egotaskqa_state_change.py（不是 build_egotaskqa_slices.py；
+#       gen_egotaskqa_yamls.py 的模板已过时，max_new_tokens 仍是 32，别用它重生成）
+#
+# 能力体系 #27 主测是「EgoTaskQA Descriptive 中对象状态/状态变化题」，ERIQ Action
+# Understanding 只是补充。2026-10-20 前 #27 只挂 ERIQ（四选一那半不看图就答对 68.8%）。
+#
+# 数据：https://huggingface.co/datasets/eyuansu71/EgoTaskQA
+# 论文：https://arxiv.org/abs/2201.05994
+#
+# 判分：与另外三个切片相同（utils_qa.py，归一化精确匹配）。本切片全是 yes/no 题，
+#       process_docs_verify_only 不会筛掉任何题。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/egotaskqa/data/egotaskqa_state_change.jsonl
+task: "egotaskqa_state_change"
+test_split: test
+process_docs: !function utils_filter.process_docs_verify_only
+output_type: generate_until
+
+doc_to_visual: !function utils_qa.doc_to_visual
+doc_to_text: !function utils_qa.doc_to_text
+doc_to_target: !function utils_qa.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+process_results: !function utils_qa.process_results
+metric_list:
+  - metric: egotaskqa_accuracy
+    aggregation: !function utils_qa.aggregate_results
+    higher_is_better: true
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: "\nAnswer with a short phrase only, without extra explanation."
+
+metadata:
+  version: 0.1
+  note: 'P0 #27 单体/多体状态理解；200 题（state/change 各 100）；descriptive 对象状态/状态变化是非题'

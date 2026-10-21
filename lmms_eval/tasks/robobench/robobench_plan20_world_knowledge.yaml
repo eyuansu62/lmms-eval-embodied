@@ -1,0 +1,39 @@
+# RoboBench · P0 #28 子任务分解 · cross_object/world_knowledge（Q1，每子任务抽 20 题，是 robobench_plan_world_knowledge 的子集）
+#
+# 输出类型: generate_until（开放式规划）
+# Prompt: 官方 skill list + 本体类型 + 题干，见 utils.doc_to_text_openended
+# 判分（与官方 evaluation/planning.py 一致）:
+#   - Q3 yes/no: 评测时直接判
+#   - Q1 多步规划: judge 看首帧 + GT 动作序列 + GT DAG，给 node_correctness 与
+#                  task_completion（各 0-10），分数 = 两者之和 / 20
+#   - Q2 下一步:   judge 抽取下一步 → 按技能/对象/参数三维比较，分数 = 三项之和 / 3
+#   Q1/Q2 在评测时记 -1（待判），须事后跑 judge_robobench_openended.py
+# 数据: LeoFan01/RoboBench (HF)；由 gen_robobench_openended_yamls.py 生成，不要手改。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/robobench/data/robobench_plan20_world_knowledge.jsonl
+task: "robobench_plan20_world_knowledge"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.doc_to_visual
+doc_to_text: !function utils.doc_to_text_openended
+doc_to_target: !function utils.doc_to_target
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  do_sample: false
+
+process_results: !function utils.process_results_openended
+metric_list:
+  - metric: rb_openended_score
+    aggregation: !function utils.aggregate_openended
+    higher_is_better: true
+
+metadata:
+  # 0.2：官方 prompt + 官方判分。0.1 只发裸题干、用自写的 F1/0-10 judge，不可比。
+  version: 0.2
+  note: "B-tier RoboBench · P0 #28 子任务分解 · cross_object/world_knowledge（Q1，每子任务抽 20 题，是 robobench_plan_world_knowledge 的子集） · judge needed post-hoc"

@@ -1,0 +1,47 @@
+# EAI · VirtualHome 动作序列（P0 #31 约束满足检查）
+#
+# 给场景物体、当前状态与目标，输出动作命令序列；官方 VirtualHome 演化图模拟器逐步执行，
+# 某步前置条件不满足即中止并归类（缺步骤 / 可供性错误 / 顺序错误）。
+# 305 题（官方 342，剔除 37 道标准程序自己过不了的，见 build_eai_action_seq.py）。
+# 纯文本、官方原 prompt。报表主分 eai_as_executable（执行成功率）。
+# 判分细节与偏离官方之处见 utils_as.py。需要 lmms-eval 环境里装好 eai-eval 1.0.5。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/eai/data/eai_action_seq.jsonl
+task: "eai_action_seq"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.eai_doc_to_visual
+doc_to_text: !function utils_as.doc_to_text
+doc_to_target: !function utils_as.doc_to_target
+process_results: !function utils_as.process_results
+
+metric_list:
+  - metric: eai_as_executable
+    aggregation: !function utils_as.agg_executable
+    higher_is_better: true
+  - metric: eai_as_success
+    aggregation: !function utils_as.agg_success
+    higher_is_better: true
+  - metric: eai_as_parse_rate
+    aggregation: !function utils_as.agg_parse_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: ""
+
+metadata:
+  version: 0.1
+  note: "#31 约束满足检查｜VirtualHome 动作序列 305 题｜纯文本·官方原协议·模拟器判分"

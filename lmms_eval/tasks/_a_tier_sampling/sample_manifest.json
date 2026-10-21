@@ -1,0 +1,259 @@
+{
+  "budget": 800,
+  "seed": 20260926,
+  "floor": 50,
+  "benchmarks": {
+    "CausalPhys": {
+      "original_total": 800,
+      "sampled_total": 800,
+      "slices": {
+        "causalphys_collision_prediction": {
+          "file": "lmms_eval/tasks/causalphys/data/collision_prediction.jsonl",
+          "original": 148,
+          "sampled": 148,
+          "ci95_halfwidth_pct": 8.06
+        },
+        "causalphys_containability": {
+          "file": "lmms_eval/tasks/causalphys/data/containability.jsonl",
+          "original": 99,
+          "sampled": 99,
+          "ci95_halfwidth_pct": 9.85
+        },
+        "causalphys_deformation": {
+          "file": "lmms_eval/tasks/causalphys/data/deformation.jsonl",
+          "original": 99,
+          "sampled": 99,
+          "ci95_halfwidth_pct": 9.85
+        },
+        "causalphys_fluid_flow": {
+          "file": "lmms_eval/tasks/causalphys/data/fluid_flow.jsonl",
+          "original": 99,
+          "sampled": 99,
+          "ci95_halfwidth_pct": 9.85
+        },
+        "causalphys_multi_hop": {
+          "file": "lmms_eval/tasks/causalphys/data/multihop_pool.jsonl",
+          "original": 83,
+          "sampled": 83,
+          "ci95_halfwidth_pct": 10.76
+        },
+        "causalphys_mechanics_reasoning": {
+          "file": "lmms_eval/tasks/causalphys/data/mechanics_reasoning_attribution.jsonl",
+          "original": 75,
+          "sampled": 75,
+          "ci95_halfwidth_pct": 11.32
+        },
+        "causalphys_spatial_manipulation": {
+          "file": "lmms_eval/tasks/causalphys/data/spatial_manipulation.jsonl",
+          "original": 74,
+          "sampled": 74,
+          "ci95_halfwidth_pct": 11.39
+        },
+        "causalphys_temporal_shifting": {
+          "file": "lmms_eval/tasks/causalphys/data/temporal_shifting.jsonl",
+          "original": 73,
+          "sampled": 73,
+          "ci95_halfwidth_pct": 11.47
+        },
+        "causalphys_action_substitution": {
+          "file": "lmms_eval/tasks/causalphys/data/action_substitution.jsonl",
+          "original": 50,
+          "sampled": 50,
+          "ci95_halfwidth_pct": 13.86
+        }
+      }
+    },
+    "EgoTaskQA": {
+      "original_total": 800,
+      "sampled_total": 800,
+      "slices": {
+        "egotaskqa_event_order": {
+          "file": "lmms_eval/tasks/egotaskqa/data/egotaskqa_event_order.jsonl",
+          "original": 406,
+          "sampled": 406,
+          "ci95_halfwidth_pct": 4.86
+        },
+        "egotaskqa_explanatory": {
+          "file": "lmms_eval/tasks/egotaskqa/data/egotaskqa_explanatory.jsonl",
+          "original": 235,
+          "sampled": 235,
+          "ci95_halfwidth_pct": 6.39
+        },
+        "egotaskqa_counterfactual": {
+          "file": "lmms_eval/tasks/egotaskqa/data/egotaskqa_counterfactual.jsonl",
+          "original": 159,
+          "sampled": 159,
+          "ci95_halfwidth_pct": 7.77
+        }
+      }
+    },
+    "MV-RoboBench": {
+      "original_total": 810,
+      "sampled_total": 800,
+      "slices": {
+        "mvrb_affordance": {
+          "file": "lmms_eval/tasks/mvrobobench/data/mvrb_affordance.jsonl",
+          "original": 209,
+          "sampled": 206,
+          "ci95_halfwidth_pct": 6.83
+        },
+        "mvrb_distance": {
+          "file": "lmms_eval/tasks/mvrobobench/data/mvrb_distance.jsonl",
+          "original": 201,
+          "sampled": 198,
+          "ci95_halfwidth_pct": 6.96
+        },
+        "mvrb_cross_view": {
+          "file": "lmms_eval/tasks/mvrobobench/data/mvrb_cross_view.jsonl",
+          "original": 200,
+          "sampled": 198,
+          "ci95_halfwidth_pct": 6.96
+        },
+        "mvrb_trajectory": {
+          "file": "lmms_eval/tasks/mvrobobench/data/mvrb_trajectory.jsonl",
+          "original": 200,
+          "sampled": 198,
+          "ci95_halfwidth_pct": 6.96
+        }
+      }
+    },
+    "PhysBench": {
+      "original_total": 800,
+      "sampled_total": 800,
+      "slices": {
+        "physbench_property_object": {
+          "file": "lmms_eval/tasks/physbench/data/physbench_property_object.jsonl",
+          "original": 330,
+          "sampled": 330,
+          "ci95_halfwidth_pct": 5.39
+        },
+        "physbench_single_body_dynamics": {
+          "file": "lmms_eval/tasks/physbench/data/physbench_single_body_dynamics.jsonl",
+          "original": 187,
+          "sampled": 187,
+          "ci95_halfwidth_pct": 7.17
+        },
+        "physbench_fluid_prediction": {
+          "file": "lmms_eval/tasks/physbench/data/physbench_fluid_prediction.jsonl",
+          "original": 108,
+          "sampled": 108,
+          "ci95_halfwidth_pct": 9.43
+        },
+        "physbench_multi_body_collision": {
+          "file": "lmms_eval/tasks/physbench/data/physbench_multi_body_collision.jsonl",
+          "original": 68,
+          "sampled": 68,
+          "ci95_halfwidth_pct": 11.88
+        },
+        "physbench_object_permanence": {
+          "file": "lmms_eval/tasks/physbench/data/physbench_object_permanence.jsonl",
+          "original": 57,
+          "sampled": 57,
+          "ci95_halfwidth_pct": 12.98
+        },
+        "physbench_fluid_perception": {
+          "file": "lmms_eval/tasks/physbench/data/physbench_fluid_perception.jsonl",
+          "original": 50,
+          "sampled": 50,
+          "ci95_halfwidth_pct": 13.86
+        }
+      }
+    },
+    "Point-It-Out": {
+      "original_total": 231,
+      "sampled_total": 231,
+      "slices": {
+        "pio_affordance": {
+          "file": "lmms_eval/tasks/pio/data/pio_affordance.jsonl",
+          "original": 124,
+          "sampled": 124,
+          "ci95_halfwidth_pct": 8.8
+        },
+        "pio_attribute_reference": {
+          "file": "lmms_eval/tasks/pio/data/pio_attribute_reference.jsonl",
+          "original": 95,
+          "sampled": 95,
+          "ci95_halfwidth_pct": 10.05
+        },
+        "pio_safety": {
+          "file": "lmms_eval/tasks/pio/data/pio_safety.jsonl",
+          "original": 12,
+          "sampled": 12,
+          "ci95_halfwidth_pct": 28.29
+        }
+      }
+    },
+    "RoboBench": {
+      "original_total": 1153,
+      "sampled_total": 800,
+      "slices": {
+        "robobench_static_attribute": {
+          "file": "lmms_eval/tasks/robobench/data/robobench_static_attribute.jsonl",
+          "original": 329,
+          "sampled": 228,
+          "ci95_halfwidth_pct": 6.49
+        },
+        "robobench_low_level_error": {
+          "file": "lmms_eval/tasks/robobench/data/robobench_low_level_error.jsonl",
+          "original": 151,
+          "sampled": 105,
+          "ci95_halfwidth_pct": 9.56
+        },
+        "robobench_dynamic_affordance": {
+          "file": "lmms_eval/tasks/robobench/data/robobench_dynamic_affordance.jsonl",
+          "original": 149,
+          "sampled": 103,
+          "ci95_halfwidth_pct": 9.66
+        },
+        "robobench_static_affordance": {
+          "file": "lmms_eval/tasks/robobench/data/robobench_static_affordance.jsonl",
+          "original": 147,
+          "sampled": 102,
+          "ci95_halfwidth_pct": 9.7
+        },
+        "robobench_high_level_error": {
+          "file": "lmms_eval/tasks/robobench/data/robobench_high_level_error.jsonl",
+          "original": 145,
+          "sampled": 101,
+          "ci95_halfwidth_pct": 9.75
+        },
+        "robobench_timestamp_analysis": {
+          "file": "lmms_eval/tasks/robobench/data/robobench_timestamp_analysis.jsonl",
+          "original": 131,
+          "sampled": 91,
+          "ci95_halfwidth_pct": 10.27
+        },
+        "robobench_spatial_relation": {
+          "file": "lmms_eval/tasks/robobench/data/robobench_spatial_relation.jsonl",
+          "original": 101,
+          "sampled": 70,
+          "ci95_halfwidth_pct": 11.71
+        }
+      }
+    },
+    "VSI-Bench": {
+      "original_total": 800,
+      "sampled_total": 800,
+      "slices": {
+        "vsibench_rel_distance": {
+          "file": "lmms_eval/tasks/vsibench/data/vsibench_rel_distance.jsonl",
+          "original": 329,
+          "sampled": 329,
+          "ci95_halfwidth_pct": 5.4
+        },
+        "vsibench_size_estimation": {
+          "file": "lmms_eval/tasks/vsibench/data/vsibench_size_estimation.jsonl",
+          "original": 265,
+          "sampled": 265,
+          "ci95_halfwidth_pct": 6.02
+        },
+        "vsibench_rel_direction": {
+          "file": "lmms_eval/tasks/vsibench/data/vsibench_rel_direction.jsonl",
+          "original": 206,
+          "sampled": 206,
+          "ci95_halfwidth_pct": 6.83
+        }
+      }
+    }
+  }
+}

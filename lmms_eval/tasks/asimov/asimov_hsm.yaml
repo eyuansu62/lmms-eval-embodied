@@ -1,0 +1,48 @@
+# ASIMOV · 人员安全监控（P0 #36 安全监控，能力体系 主测「ASIMOV-2.0 Video」）
+#
+# 头戴双目相机 4 帧连续画面（8 张图），判断操作者以外的人是否在 3m 内 → stop_robot() / continue()。
+# 官方 tool_use 协议原文提示词与判分（见 build_asimov_hsm.py、utils.py）；未传 tools，靠官方 scorer
+# 的文本分支判。400 题，停/继续各 200（按类别分层，seed 42），逐题平均即平衡准确率，全答 stop = 50%。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/asimov/data/asimov_hsm.jsonl
+task: "asimov_hsm"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.asimov_hsm_doc_to_visual
+doc_to_text: !function utils.asimov_hsm_doc_to_text
+doc_to_target: !function utils.asimov_hsm_doc_to_target
+process_results: !function utils.asimov_hsm_process_results
+
+metric_list:
+  - metric: asimov_hsm_balanced
+    aggregation: !function utils.asimov_hsm_aggregate_balanced
+    higher_is_better: true
+  - metric: asimov_hsm_accuracy
+    aggregation: !function utils.asimov_hsm_aggregate_accuracy
+    higher_is_better: true
+  - metric: asimov_hsm_miss_rate
+    aggregation: !function utils.asimov_hsm_aggregate_miss_rate
+    higher_is_better: false
+  - metric: asimov_hsm_parse_rate
+    aggregation: !function utils.asimov_hsm_aggregate_parse_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+lmms_eval_specific_kwargs:
+  default:
+    pre_prompt: ""
+    post_prompt: ""
+
+metadata:
+  version: 0.1
+  note: "#36 安全监控｜ASIMOV human_safety_monitoring 400 题（停/继续各 200）｜官方 tool_use 提示词，文本判分"

@@ -1,0 +1,36 @@
+# TVBench · action_sequence —— 能力表 #13 事件顺序理解（不是 lmms-eval 自带的 tvbench_action_sequence）
+#
+# 数据：FunAILab/TVBench（CC BY 4.0），由 build_tvbench_cap13.py 生成（action_sequence 按 start/end
+# 裁剪片段、A/B 各 100；egocentric_sequence 全量 200）。判分见 utils_cap13.py。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/tvbench/data/tvbench_cap13_action_sequence.jsonl
+task: "tvbench_cap13_action_sequence"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils_cap13.doc_to_visual
+doc_to_text: !function utils_cap13.doc_to_text
+doc_to_target: !function utils_cap13.doc_to_target
+process_results: !function utils_cap13.process_results
+
+metric_list:
+  - metric: tvbench_cap13_accuracy
+    aggregation: !function utils_cap13.agg_accuracy
+    higher_is_better: true
+  - metric: tvbench_cap13_parse_rate
+    aggregation: !function utils_cap13.agg_parse_rate
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+metadata:
+  version: 0.1
+  note: "#13 事件顺序理解｜TVBench action_sequence"

@@ -1,0 +1,20 @@
+# ASIMOV · 本体约束满足：给定本体约束（负载、夹爪类型、温度 …），看图判断能不能抬起
+#
+# 对应 能力体系（CAPABILITIES.md）能力行：#3 本体客体交互关系（「这个夹爪能不能抬这个物体」，本体 × 客体）
+# 能力体系 也把它列在 #1 / #31 / #36 下；同一份题不重复加权，只挂 #3（#1 由 vla_feasibility 承担）
+# 切片：constraints/physical_constraints.parquet · 641 题全量（不采样）
+#
+# 指令恒为 "Lift the object in the center of the table"，变化全在 144 种约束文本里。
+# 约束几乎都是夹爪/负载/温度类：reach/运动学只有 12 题、多臂 0 题，
+# 所以它测不到 能力体系 写的 Kinematics and Reach / Multi-arm 两类。
+# 盲猜基线：execute 341 / refuse 300，全答 EXECUTE = 53.2%。
+
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/asimov/data/asimov_constraints.jsonl
+task: "asimov_constraints"
+include: _default_template_yaml
+
+metadata:
+  version: 0.1
+  note: "#3 本体客体交互关系｜641 题全量｜文本化口径（官方为 tool-call）"

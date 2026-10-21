@@ -1,0 +1,55 @@
+# VSI-Bench · 相对距离（P0 #9）
+#
+# 筛选切片：question_type IN {object_rel_distance, object_abs_distance}
+# 题数：1544
+#
+# 论文：https://arxiv.org/abs/2412.14171
+# 数据：https://huggingface.co/datasets/nyu-visionx/VSI-Bench
+#
+# ⚠️ 这是**按 能力体系（CAPABILITIES.md） 条目筛选的切片**，不是官方子集。
+#    筛选逻辑见 build_vsibench_slices.py。
+#
+# 媒体：视频不在 parquet 里，需下载 arkitscenes.zip / scannet.zip /
+#       scannetpp.zip 并解压到 ~/.cache/huggingface/vsibench/
+#       使其形成 ~/.cache/huggingface/vsibench/<dataset>/<scene_name>.mp4
+#
+# 注：切片字段与原 test.jsonl 一致，直接复用本目录的 utils.py 判分。
+#     doc_to_messages 也一并继承（部分模型后端走 messages 路径）。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/vsibench/data/vsibench_rel_distance.jsonl
+  cache_dir: vsibench
+  video: true
+task: "vsibench_rel_distance"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.vsibench_doc_to_visual
+doc_to_text: !function utils.vsibench_doc_to_text
+doc_to_messages: !function utils.vsibench_doc_to_messages
+doc_to_target: "ground_truth"
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+process_results: !function utils.vsibench_process_results
+metric_list:
+  - metric: vsibench_overall
+    aggregation: !function utils_slice_agg.vsibench_slice_aggregate_overall
+    higher_is_better: true
+  - metric: object_abs_distance_mra
+    aggregation: !function utils_slice_agg.vsibench_slice_aggregate_object_abs_distance_mra
+    higher_is_better: true
+  - metric: object_rel_distance_accuracy
+    aggregation: !function utils_slice_agg.vsibench_slice_aggregate_object_rel_distance_accuracy
+    higher_is_better: true
+
+metadata:
+  version: 0.1
+  note: 'P0 #9 相对距离；1544 题；判据 question_type IN {object_rel_distance, object_abs_distance}'
