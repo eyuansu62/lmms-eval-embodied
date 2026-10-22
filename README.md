@@ -45,7 +45,7 @@ cp .env.example .env                  # 填入端点与 key
 
 **评测结果**：10 个模型的完整逐题结果：[eyuansu71/lmms-eval-embodied-results](https://huggingface.co/datasets/eyuansu71/lmms-eval-embodied-results)（Hugging Face）。
 
-**实验性任务（未来工作，未进入能力表）**：`spatialuncertain_*` 基于 [SpatialUncertain](https://huggingface.co/datasets/Yuezhangjoslin/spatialuncertain)（CC BY 4.0，需在 HF 页面同意条款），对应 #45「场景完整判断与处置」中目前缺失的部分：判断（同一问题的清晰版与完全遮挡版配对，两份都对才算对，150 对）与处置（五个视角里选出能作答的那个，200 题）。分数只出现在明细表，不参与能力合并。
+**实验性任务（未来工作，未进入能力表）**：`spatialuncertain_*` 基于 [SpatialUncertain](https://huggingface.co/datasets/Yuezhangjoslin/spatialuncertain)（CC BY 4.0，需在 HF 页面同意条款），对应 #45「场景完整判断与处置」中目前缺失的部分：判断（同一问题的清晰版与完全遮挡版配对，两份都对才算对，150 对）与处置（五个视角里选出能作答的那个，200 题）。分数只出现在明细表，不参与能力合并。**注意**：视角选择有捷径，只按“哪张图最左右对称”选就能答对 89.5%，高于所有模型；遮挡配对分数贴地板且部分标签有噪声。详见 `lmms_eval/tasks/spatialuncertain/README.md`。
 
 `actiview_*` 基于 [ActiView](https://huggingface.co/datasets/wangphoebe/ActiView)（Apache-2.0，325 题），是多轮交互形态的主动感知评测：`full` 全图单轮作对照；`zoom` 两轮，先选要放大的切片再作答；`shift_{easy,medium,hard}` 只给一个切片，模型每轮决定还要看哪些切片，看够了再作答。提示词照论文附录 J，细节见 `lmms_eval/tasks/actiview/README.md`。多轮任务各请求按轮批量发出，后端并发在请求之间生效。
 
@@ -166,7 +166,9 @@ are upstream lmms-eval tasks run on class-balanced samples (`lmms_eval/tasks/c_t
 on Hugging Face first). They target the missing "handling" half of #45 (scene completeness): *judgment* — the same
 question on a clean view (answer) and a fully occluded view (answer "cannot determine"), scored per pair, 150 pairs;
 *handling* — pick the one of five views that resolves the question, 200 items. Scores appear in the detail tables only
-and are not merged into the capability table.
+and are not merged into the capability table. **Caveat:** view selection has a shortcut: picking the most
+left-right symmetric image, with no model at all, scores 89.5%, above every model; the occlusion pairs score near the
+floor and some labels are noisy. See `lmms_eval/tasks/spatialuncertain/README.md`.
 
 `actiview_*` are built from [ActiView](https://huggingface.co/datasets/wangphoebe/ActiView) (Apache-2.0, 325 items) and
 evaluate active perception in a multi-turn loop: `full` is a single-turn full-image baseline; `zoom` asks the model to
