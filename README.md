@@ -45,6 +45,8 @@ cp .env.example .env                  # 填入端点与 key
 
 **评测结果**：10 个模型的完整逐题结果：[eyuansu71/lmms-eval-embodied-results](https://huggingface.co/datasets/eyuansu71/lmms-eval-embodied-results)（Hugging Face）。
 
+**实验性任务（未来工作，未进入能力表）**：`spatialuncertain_*` 基于 [SpatialUncertain](https://huggingface.co/datasets/Yuezhangjoslin/spatialuncertain)（CC BY 4.0，需在 HF 页面同意条款），对应 #45「场景完整判断与处置」中目前缺失的部分：判断（同一问题的清晰版与完全遮挡版配对，两份都对才算对，150 对）与处置（五个视角里选出能作答的那个，200 题）。分数只出现在明细表，不参与能力合并。
+
 **数据来源与许可**见下方英文部分的表格。代码沿用 lmms-eval 的 MIT 许可；IntPhys 2 与 TVBench 中的 Charades 片段**仅限非商用**。
 
 ---
@@ -154,6 +156,15 @@ Most tasks evaluate a subset of the original benchmark selected for one capabili
 its selection rule. Licenses are those declared by the dataset authors — check them before any non-evaluation use.
 The C-tier tasks (CrossPoint, MultiHopSpatial, OmniSpatial, RoboSpatial, SPAR-Bench, EmbSpatial, PhyX, EPIC-Bench)
 are upstream lmms-eval tasks run on class-balanced samples (`lmms_eval/tasks/c_tier_sampling.py`).
+
+### Experimental tasks (future work, not in the capability table)
+
+`spatialuncertain_occ_answerable`, `spatialuncertain_occ_abstain`, `spatialuncertain_view_select` are built from
+[SpatialUncertain](https://huggingface.co/datasets/Yuezhangjoslin/spatialuncertain) (CC BY 4.0, gated: accept the terms
+on Hugging Face first). They target the missing "handling" half of #45 (scene completeness): *judgment* — the same
+question on a clean view (answer) and a fully occluded view (answer "cannot determine"), scored per pair, 150 pairs;
+*handling* — pick the one of five views that resolves the question, 200 items. Scores appear in the detail tables only
+and are not merged into the capability table.
 
 ### License
 

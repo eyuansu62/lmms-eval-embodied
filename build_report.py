@@ -130,6 +130,8 @@ AB_PRIMARY: dict[str, tuple[str, str | None]] = {
     "tvbench_cap13_egocentric_sequence": ("tvbench_cap13_accuracy", "is_correct"),
     "vlm4d_cap37_ego": ("vlm4d_cap37_accuracy", "is_correct"),
     "vlm4d_cap37_exo": ("vlm4d_cap37_accuracy", "is_correct"),
+    **{f"spatialuncertain_{s}": ("spatialuncertain_accuracy", "is_correct")
+       for s in ("occ_answerable", "occ_abstain", "view_select")},
 }
 
 # ERIQ 的第三个口径（Yes/No → 字母归一），仅在 summary_subtasks.csv 里出列，
@@ -575,7 +577,7 @@ MODELS = {
 }
 A_BENCH = ["causalphys", "physbench", "vsibench", "momagraph", "negvqa", "refspatial", "egotaskqa", "eriq"]
 B_BENCH = ["robobench", "robobench_plan", "mvrobobench", "pio", "asimov", "eai", "mmupd", "aqua", "openeqa",
-           "intphys2", "corecognition", "tvbench_cap13", "vlm4d_cap37"]
+           "intphys2", "corecognition", "tvbench_cap13", "vlm4d_cap37", "spatialuncertain"]
 # C 档的目录词干和任务名不同（连写），与 run_a_tier_api.py / run_model.sh 的键一致
 C_BENCH = ["crosspoint", "multihopspatial", "omnispatial", "robospatial",
            "sparbench", "embspatial", "phyx", "epic"]

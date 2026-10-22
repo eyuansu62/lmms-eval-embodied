@@ -53,7 +53,7 @@ PY="${PYTHON:-python3}"
 command -v "$PY" >/dev/null || PY="python3"
 
 A_BENCH=(causalphys physbench vsibench momagraph negvqa refspatial egotaskqa eriq)
-B_BENCH=(robobench robobench_plan mvrobobench pio asimov eai mmupd aqua openeqa intphys2 corecognition tvbench_cap13 vlm4d_cap37)
+B_BENCH=(robobench robobench_plan mvrobobench pio asimov eai mmupd aqua openeqa intphys2 corecognition tvbench_cap13 vlm4d_cap37 spatialuncertain)
 # C 档：这 8 个名字与 run_a_tier_api.py 的 BENCHMARKS 键一致（跨档唯一）。
 # 注意与 lmms-eval 的 --tasks 取值拼写不同：
 #   omnispatial       <-> omni_spatial

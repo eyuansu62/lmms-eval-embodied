@@ -169,6 +169,7 @@ STEPS = {
     "causalphys": prep_causalphys,
     "eai": prep_eai,
     "asimov": prep_asimov,
+    "spatialuncertain": lambda: run("spatialuncertain", "build_spatialuncertain.py"),
     "intphys2": prep_intphys2,
     "openeqa_scene": prep_openeqa,
 }

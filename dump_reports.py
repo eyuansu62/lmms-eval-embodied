@@ -94,6 +94,7 @@ NOTES = {
     "openeqa": "#6 场景语义；16 帧/题(本地抽帧)，judge=qwen3.8-max；数据 2023 年，可能有污染",
     "corecognition": "#35 守恒 71 / 恒常性 98；frame-combined 单图，官方 prompt；是非题 YES/NO 等量采样",
     "tvbench_cap13": "#13 事件顺序；action_sequence 按 start/end 裁剪、A/B 各 100，egocentric 全量 200；16 帧；二选一盲猜 50 / 四选一 25",
+    "spatialuncertain": "实验性（未进能力表）：#45 判断（清晰/完全遮挡配对，两份都对才算对）150 对 + 处置（五选一选视角）200 题；需 HF 同意条款",
     "vlm4d_cap37": "#37 当前运动方向；真实视频 300 题，16 帧；exo 盲测 30.7(随机25)，ego 多为左/右二选一、盲测 46.7(按50读)",
     "intphys2": "#35 恒常性 / #38 运动连续性；1 帧/秒(11–15 帧)，官方 prompt1；全答 Yes=50%，CC BY-NC 仅限评测",
     "aqua": "#47 询问必要信息；judge=qwen3.8-max 判策略等级(论文用GPT-5-mini)；策略性提示词，非零样本",
@@ -401,7 +402,29 @@ def _asimov_gauge_judge_scores(label: str, suffix: str) -> dict[str, tuple[float
     return out
 
 
-DERIVED_SCORES = {"negvqa": _negvqa_paired_scores, "asimov": _asimov_gauge_judge_scores}
+def _spatialuncertain_paired_scores(label: str, suffix: str) -> dict[str, tuple[float, int]]:
+    """#45 判断用：同一目标、同一问题的清晰版（应作答）与完全遮挡版（应答 Cannot determine）**都对**才算对。
+
+    两份题干与选项文字相同，不看图无法区分；单看任一版都可以靠「一律拒答 / 从不拒答」拿分。
+    按 pair_id 配对（来自样本里 spatialuncertain_accuracy 的 entry）。请求失败记错。
+    """
+    loaded = _loaded(label, suffix, "B", "spatialuncertain")
+    ok = {"occ_answerable": {}, "occ_abstain": {}}
+    for t, r in loaded:
+        kind = t.removeprefix("spatialuncertain_")
+        e = r.get("spatialuncertain_accuracy")
+        if kind in ok and isinstance(e, dict) and e.get("pair_id"):
+            failed = br.FAIL_MARK in str(r.get("filtered_resps", ""))
+            ok[kind][e["pair_id"]] = bool(e.get("is_correct")) and not failed
+    ids = set(ok["occ_answerable"]) & set(ok["occ_abstain"])
+    if not ids:
+        return {}
+    vals = [float(ok["occ_answerable"][i] and ok["occ_abstain"][i]) for i in ids]
+    return {"paired": (sum(vals) / len(vals), len(vals))}
+
+
+DERIVED_SCORES = {"negvqa": _negvqa_paired_scores, "asimov": _asimov_gauge_judge_scores,
+                  "spatialuncertain": _spatialuncertain_paired_scores}
 
 
 def write_subtasks(report: dict, out: pathlib.Path) -> None:

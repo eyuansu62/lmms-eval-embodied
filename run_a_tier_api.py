@@ -378,6 +378,13 @@ BENCHMARKS = {
         "log": "/tmp/eval_vlm4d37_qwen3max.log",
         "model_args_extra": "max_frames_num=16",
     },
+    # SpatialUncertain（实验性，未进能力表；对应 #45 场景完整判断与处置）。判断：清晰 / 完全遮挡配对 150 对；
+    # 处置：五个视角选一 200 题（每题 5 张图）。
+    "spatialuncertain": {
+        "tasks": "spatialuncertain_occ_answerable,spatialuncertain_occ_abstain,spatialuncertain_view_select",
+        "out": "eval_B_spatialuncertain_qwen3max",
+        "log": "/tmp/eval_su_qwen3max.log",
+    },
     # C 档 —— 键名刻意与 C 档结果目录的词干一致
     # （eval_C_<键>_<后缀>），这样 build_report.py 拼目录名时不用额外做映射。
     # 注意 omnispatial / robospatial 是连写的，和任务名 omni_spatial / robo_spatial_all 不同。
