@@ -170,6 +170,7 @@ STEPS = {
     "eai": prep_eai,
     "asimov": prep_asimov,
     "spatialuncertain": lambda: run("spatialuncertain", "build_spatialuncertain.py"),
+    "actiview": lambda: run("actiview", "build_actiview.py"),
     "intphys2": prep_intphys2,
     "openeqa_scene": prep_openeqa,
 }

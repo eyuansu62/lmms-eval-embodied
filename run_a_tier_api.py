@@ -385,6 +385,12 @@ BENCHMARKS = {
         "out": "eval_B_spatialuncertain_qwen3max",
         "log": "/tmp/eval_su_qwen3max.log",
     },
+    # ActiView（主动感知多轮，实验性，未进入能力表），2026-10-22 加。全图对照 + 放大两轮 + 三档移动多轮。
+    "actiview": {
+        "tasks": "actiview_full,actiview_zoom,actiview_shift_easy,actiview_shift_medium,actiview_shift_hard",
+        "out": "eval_B_actiview_qwen3max",
+        "log": "/tmp/eval_av_qwen3max.log",
+    },
     # C 档 —— 键名刻意与 C 档结果目录的词干一致
     # （eval_C_<键>_<后缀>），这样 build_report.py 拼目录名时不用额外做映射。
     # 注意 omnispatial / robospatial 是连写的，和任务名 omni_spatial / robo_spatial_all 不同。

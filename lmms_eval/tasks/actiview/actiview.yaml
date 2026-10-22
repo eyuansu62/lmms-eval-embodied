@@ -1,0 +1,7 @@
+group: actiview
+task:
+  - actiview_full
+  - actiview_zoom
+  - actiview_shift_easy
+  - actiview_shift_medium
+  - actiview_shift_hard

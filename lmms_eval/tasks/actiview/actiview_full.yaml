@@ -1,0 +1,42 @@
+# ActiView · full —— 主动感知（实验性，未进入能力表）。全图单轮对照（J.1）。
+# 数据：wangphoebe/ActiView（Apache-2.0），由 build_actiview.py 生成。提示词见 utils.py 文件头。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/actiview/data/actiview.jsonl
+task: "actiview_full"
+test_split: test
+output_type: generate_until
+
+doc_to_visual: !function utils.full_doc_to_visual
+doc_to_text: !function utils.full_doc_to_text
+doc_to_target: !function utils.doc_to_target
+process_results: !function utils.process_results
+
+metric_list:
+  - metric: actiview_accuracy
+    aggregation: !function utils.agg_accuracy
+    higher_is_better: true
+  - metric: actiview_parse_rate
+    aggregation: !function utils.agg_parse_rate
+    higher_is_better: true
+  - metric: actiview_num_views
+    aggregation: !function utils.agg_num_views
+    higher_is_better: false
+  - metric: actiview_clue_recall
+    aggregation: !function utils.agg_clue_recall
+    higher_is_better: true
+  - metric: actiview_invalid_rate
+    aggregation: !function utils.agg_invalid_rate
+    higher_is_better: false
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+
+metadata:
+  version: 0.1

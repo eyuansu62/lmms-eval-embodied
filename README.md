@@ -47,6 +47,8 @@ cp .env.example .env                  # 填入端点与 key
 
 **实验性任务（未来工作，未进入能力表）**：`spatialuncertain_*` 基于 [SpatialUncertain](https://huggingface.co/datasets/Yuezhangjoslin/spatialuncertain)（CC BY 4.0，需在 HF 页面同意条款），对应 #45「场景完整判断与处置」中目前缺失的部分：判断（同一问题的清晰版与完全遮挡版配对，两份都对才算对，150 对）与处置（五个视角里选出能作答的那个，200 题）。分数只出现在明细表，不参与能力合并。
 
+`actiview_*` 基于 [ActiView](https://huggingface.co/datasets/wangphoebe/ActiView)（Apache-2.0，325 题），是多轮交互形态的主动感知评测：`full` 全图单轮作对照；`zoom` 两轮，先选要放大的切片再作答；`shift_{easy,medium,hard}` 只给一个切片，模型每轮决定还要看哪些切片，看够了再作答。提示词照论文附录 J，细节见 `lmms_eval/tasks/actiview/README.md`。多轮任务各请求按轮批量发出，后端并发在请求之间生效。
+
 **数据来源与许可**见下方英文部分的表格。代码沿用 lmms-eval 的 MIT 许可；IntPhys 2 与 TVBench 中的 Charades 片段**仅限非商用**。
 
 ---
@@ -165,6 +167,13 @@ on Hugging Face first). They target the missing "handling" half of #45 (scene co
 question on a clean view (answer) and a fully occluded view (answer "cannot determine"), scored per pair, 150 pairs;
 *handling* — pick the one of five views that resolves the question, 200 items. Scores appear in the detail tables only
 and are not merged into the capability table.
+
+`actiview_*` are built from [ActiView](https://huggingface.co/datasets/wangphoebe/ActiView) (Apache-2.0, 325 items) and
+evaluate active perception in a multi-turn loop: `full` is a single-turn full-image baseline; `zoom` asks the model to
+pick sub-views to zoom into, then answer (2 rounds); `shift_{easy,medium,hard}` start from one sub-view and let the
+model request more views round by round before answering. Prompts follow the paper's Appendix J; see
+`lmms_eval/tasks/actiview/README.md`. Multi-turn requests are batched round by round, so backend concurrency applies
+across requests.
 
 ### License
 
