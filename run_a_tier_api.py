@@ -391,6 +391,12 @@ BENCHMARKS = {
         "out": "eval_B_actiview_qwen3max",
         "log": "/tmp/eval_av_qwen3max.log",
     },
+    # Theory of Space（主动探索多轮，实验性，未进入能力表），2026-10-23 加。active 自己探索 / passive 代理探索，同 27 题。
+    "tos": {
+        "tasks": "tos_active,tos_passive",
+        "out": "eval_B_tos_qwen3max",
+        "log": "/tmp/eval_tos_qwen3max.log",
+    },
     # C 档 —— 键名刻意与 C 档结果目录的词干一致
     # （eval_C_<键>_<后缀>），这样 build_report.py 拼目录名时不用额外做映射。
     # 注意 omnispatial / robospatial 是连写的，和任务名 omni_spatial / robo_spatial_all 不同。

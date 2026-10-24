@@ -839,6 +839,44 @@ def _run_generate_until_agentic(
             self.final_response = ""
             self.trace: list[dict] = []
             self.done = False
+            # Full-history mode: a task may drive the loop with complete chat histories (system/user/assistant
+            # messages, images inline) instead of one user message per round. Initial history comes from
+            # ``doc_to_text.initial_messages(doc)``; later rounds return the history as ``next_context``.
+            # A list of histories fans out: all are sent in the same round and their outputs are appended
+            # to ``previous_output`` in order.
+            self.histories = None
+            initial_messages = getattr(getattr(self.doc_to_text, "func", self.doc_to_text), "initial_messages", None)  # tasks wrap it in partial
+            if callable(initial_messages):
+                self._set_messages(initial_messages(lm.task_dict[self.task_name][self.split][self.doc_id]))
+
+        def _set_messages(self, messages: list) -> None:
+            def part_key(part):
+                if part.get("type") == "text":
+                    return part["text"]
+                return f"<{part['type']}:{part.get('key') or id(part.get('url'))}>"
+
+            self.histories = messages if messages and isinstance(messages[0], list) else [messages]
+            # The context string doubles as the response-cache key, so it must identify the whole history.
+            self.contexts = [json.dumps([[m["role"], [part_key(p) for p in m["content"]]] for m in h], ensure_ascii=False) for h in self.histories]
+            self.context = self.contexts[0]
+
+        def requests(self) -> list[Instance]:
+            if self.histories is None:
+                return [self.single_request()]
+            if getattr(lm, "is_simple", False):
+                raise ValueError("full-history agentic tasks require a chat model")
+            out = []
+            for ctx, history in zip(self.contexts, self.histories):
+                messages = [{"role": m["role"], "content": [{k: v for k, v in p.items() if k != "key"} for p in m["content"]]} for m in history]
+                out.append(
+                    Instance(
+                        request_type="generate_until",
+                        arguments=(ctx, lambda _doc, _m=messages: _m, copy.deepcopy(self.gen_kwargs), self.doc_id, self.task_name, self.split),
+                        idx=0,
+                        metadata=self.req.metadata,
+                    )
+                )
+            return out
 
         def single_request(self) -> Instance:
             if getattr(lm, "is_simple", False):
@@ -872,10 +910,11 @@ def _run_generate_until_agentic(
                 metadata=self.req.metadata,
             )
 
-        def step(self, raw_output, round_idx: int) -> None:
+        def step(self, raw_outputs: list, round_idx: int) -> None:
             round_input_context = self.context
-            current_output, _ = unwrap_generation_output(raw_output)
-            self.outputs.append(current_output)
+            current_outputs = [unwrap_generation_output(raw)[0] for raw in raw_outputs]
+            current_output = current_outputs[-1]
+            self.outputs.extend(current_outputs)
             self.final_response = current_output
             step_payload = self.doc_to_text(
                 lm.task_dict[self.task_name][self.split][self.doc_id],
@@ -909,7 +948,9 @@ def _run_generate_until_agentic(
                 if terminal_signal:
                     self.done = True
                     return
-                if next_context is not None:
+                if isinstance(next_context, list):
+                    self._set_messages(next_context)
+                elif next_context is not None:
                     self.context = next_context
                 if visuals is not None:
 
@@ -961,13 +1002,17 @@ def _run_generate_until_agentic(
         active = [s for s in states if not s.done and round_idx < s.max_steps]
         if not active:
             break
-        batch = [s.single_request() for s in active]
+        batch, spans = [], []
+        for s in active:
+            reqs = s.requests()
+            spans.append((s, len(batch), len(reqs)))
+            batch.extend(reqs)
         if response_cache is not None:
             raw_outputs = response_cache.execute(lm, "generate_until", batch)
         else:
             raw_outputs = lm.generate_until(batch)
-        for s, raw in zip(active, raw_outputs):
-            s.step(raw, round_idx)
+        for s, start, n in spans:
+            s.step(raw_outputs[start : start + n], round_idx)
         round_idx += 1
 
     return [s.finalize() for s in states]

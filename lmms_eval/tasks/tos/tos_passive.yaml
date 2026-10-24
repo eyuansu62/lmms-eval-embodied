@@ -1,0 +1,46 @@
+# Theory of Space · passive —— 主动探索（实验性，未进入能力表）。官方 scout 代理探索好，模型只答同样的 27 题。
+# 数据：MLL-Lab/Theory-of-Space（CC-BY-4.0）；环境与判分：官方代码（MIT），由 build_tos.py 准备。协议见 utils.py 文件头。
+
+dataset_path: json
+dataset_kwargs:
+  data_files:
+    test: lmms_eval/tasks/tos/data/tos.jsonl
+task: "tos_passive"
+test_split: test
+output_type: generate_until_agentic
+
+doc_to_visual: !function utils.doc_to_visual
+doc_to_text: !function utils.passive_doc_to_text
+doc_to_target: !function utils.doc_to_target
+process_results: !function utils.process_results
+
+metric_list:
+  - metric: tos_accuracy
+    aggregation: !function utils.agg_accuracy
+    higher_is_better: true
+  - metric: tos_route
+    aggregation: !function utils.agg_route
+    higher_is_better: true
+  - metric: tos_survey
+    aggregation: !function utils.agg_survey
+    higher_is_better: true
+  - metric: tos_action_cost
+    aggregation: !function utils.agg_action_cost
+    higher_is_better: false
+  - metric: tos_node_coverage
+    aggregation: !function utils.agg_node_coverage
+    higher_is_better: true
+  - metric: tos_complete
+    aggregation: !function utils.agg_complete
+    higher_is_better: true
+
+generation_kwargs:
+  max_new_tokens: 65536
+  temperature: 0
+  top_p: 1.0
+  num_beams: 1
+  do_sample: false
+  max_agentic_steps: 1
+
+metadata:
+  version: 0.1

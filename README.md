@@ -49,6 +49,8 @@ cp .env.example .env                  # 填入端点与 key
 
 `actiview_*` 基于 [ActiView](https://huggingface.co/datasets/wangphoebe/ActiView)（Apache-2.0，325 题），是多轮交互形态的主动感知评测：`full` 全图单轮作对照；`zoom` 两轮，先选要放大的切片再作答；`shift_{easy,medium,hard}` 只给一个切片，模型每轮决定还要看哪些切片，看够了再作答。提示词照论文附录 J，细节见 `lmms_eval/tasks/actiview/README.md`。多轮任务各请求按轮批量发出，后端并发在请求之间生效。
 
+`tos_active` / `tos_passive` 基于 [Theory of Space](https://huggingface.co/datasets/MLL-Lab/Theory-of-Space)（ICLR 2026，数据 CC-BY-4.0，官方代码 MIT），测主动探索：active 由模型自己在预渲染的三房间场景里移动、转向、观察（最多 20 步）后答 27 道空间题，passive 由官方脚本代理探索好、模型只答同样的题，两者之差就是「自己探索」的代价。环境、出题、判分都调用官方代码（`build_tos.py` 按固定提交获取）。为此多轮接口增加了完整对话历史（system/user/assistant、图片内联）与单轮扇出两种模式。25 个场景的结果见 `lmms_eval/tasks/tos/README.md`。
+
 **数据来源与许可**见下方英文部分的表格。代码沿用 lmms-eval 的 MIT 许可；IntPhys 2 与 TVBench 中的 Charades 片段**仅限非商用**。
 
 ---
@@ -176,6 +178,14 @@ pick sub-views to zoom into, then answer (2 rounds); `shift_{easy,medium,hard}` 
 model request more views round by round before answering. Prompts follow the paper's Appendix J; see
 `lmms_eval/tasks/actiview/README.md`. Multi-turn requests are batched round by round, so backend concurrency applies
 across requests.
+
+`tos_active` / `tos_passive` are built on [Theory of Space](https://huggingface.co/datasets/MLL-Lab/Theory-of-Space)
+(ICLR 2026; data CC-BY-4.0, official code MIT) and measure active exploration: in `active` the model moves, rotates and
+observes in pre-rendered three-room scenes (up to 20 steps) and then answers 27 spatial questions; in `passive` the
+official scripted proxy explores and the model only answers the same questions, so the gap is the cost of exploring on
+its own. Environment, question generation and scoring all call the official code (fetched at a pinned commit by
+`build_tos.py`). To support this, the agentic loop gained a full-history mode (system/user/assistant messages with
+inline images) and per-round fan-out. Results on 25 scenes are in `lmms_eval/tasks/tos/README.md`.
 
 ### License
 

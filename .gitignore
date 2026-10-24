@@ -62,6 +62,7 @@ lmms_eval/tasks/*/data/**
 lmms_eval/tasks/*/data/**/*.parquet
 lmms_eval/tasks/*/data/**/_cache/
 lmms_eval/tasks/*/media/
+lmms_eval/tasks/tos/vendor/
 
 # Local eval outputs and caches
 /eval_*/

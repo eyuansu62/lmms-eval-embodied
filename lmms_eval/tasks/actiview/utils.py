@@ -54,7 +54,7 @@ def _answer_text(text: str) -> str:
 
 def _done(info: dict, answer_raw: str):
     payload = json.dumps({"answer_raw": answer_raw, "views": info["views"], "rounds": info["rounds"], "invalid": info["invalid"]},
-                         ensure_ascii=False)
+                         ensure_ascii=False).replace("<", "\\u003c")  # 防止评测器的思考剥离在 "</think>" 处截断 JSON
     return None, None, True, [payload], info
 
 

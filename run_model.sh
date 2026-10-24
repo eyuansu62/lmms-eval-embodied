@@ -53,8 +53,8 @@ PY="${PYTHON:-python3}"
 command -v "$PY" >/dev/null || PY="python3"
 
 A_BENCH=(causalphys physbench vsibench momagraph negvqa refspatial egotaskqa eriq)
-B_BENCH=(robobench robobench_plan mvrobobench pio asimov eai mmupd aqua openeqa intphys2 corecognition tvbench_cap13 vlm4d_cap37 spatialuncertain)
-# C 档：这 8 个名字与 run_a_tier_api.py 的 BENCHMARKS 键一致（跨档唯一）。
+B_BENCH=(robobench robobench_plan mvrobobench pio asimov eai mmupd aqua openeqa intphys2 corecognition tvbench_cap13 vlm4d_cap37)
+# C 档：这些名字与 run_a_tier_api.py 的 BENCHMARKS 键一致（跨档唯一）。
 # 注意与 lmms-eval 的 --tasks 取值拼写不同：
 #   omnispatial       <-> omni_spatial
 #   robospatial       <-> robo_spatial
@@ -62,7 +62,13 @@ B_BENCH=(robobench robobench_plan mvrobobench pio asimov eai mmupd aqua openeqa 
 #   phyx              <-> phyx_mc
 #   epic              <-> epic_bench
 # 结果目录两边是一样的（eval_C_<bench>`_sampled` 对 `_<模型后缀>`），所以能直接并排比。
-C_BENCH=(crosspoint multihopspatial omnispatial robospatial sparbench embspatial phyx epic epic_orient)
+# epic_orient 不是独立来源：它补跑 EPIC 采样没抽到的 356 道朝向题，在 c_tier_subscores.py 里与 epic 合并，
+# 以 ("epic", ["Orientation_object"]) 进 #10，所以映射表里只出现 epic。
+C_BENCH=(crosspoint omnispatial phyx epic epic_orient)
+# 可选：不进能力表，默认不跑，按名字仍可单独指定。
+#   multihopspatial / robospatial / sparbench / embspatial —— C 档独立加的空间类，47 项能力里无对应项
+#   spatialuncertain —— 实验任务（见 lmms_eval/tasks/spatialuncertain/README.md）
+OPT_BENCH=(multihopspatial robospatial sparbench embspatial spatialuncertain)
 
 CONC="${CONC:-16}"
 MAX_MB="${MAX_MB:-6}"
@@ -109,7 +115,7 @@ fi
 # 位置参数：模型名可省略（PROFILE 提供了 <PROFILE>_MODEL 时）。
 # 首个位置参数若正好是已知 benchmark 名，就按 bench 解释，不当模型名 —— 否则
 # `a causalphys` 会把 causalphys 当成模型，并且回退去跑全部 benchmark。
-is_bench() { local b; for b in "${A_BENCH[@]}" "${B_BENCH[@]}" "${C_BENCH[@]}"; do [ "$1" = "$b" ] && return 0; done; return 1; }
+is_bench() { local b; for b in "${A_BENCH[@]}" "${B_BENCH[@]}" "${C_BENCH[@]}" "${OPT_BENCH[@]}"; do [ "$1" = "$b" ] && return 0; done; return 1; }
 
 MODEL=""
 if [ -n "${1:-}" ] && ! is_bench "$1"; then
@@ -295,7 +301,7 @@ run_bench() {  # run_bench <bench...>
 do_retry() {  # do_retry <bench...>
   echo "=== 补跑 $MODEL 的失败题 (bench: ${*:-全部}) ==="
   local benches=("$@")
-  [ ${#benches[@]} -eq 0 ] && benches=("${A_BENCH[@]}" "${B_BENCH[@]}" "${C_BENCH[@]}")
+  [ ${#benches[@]} -eq 0 ] && benches=("${A_BENCH[@]}" "${B_BENCH[@]}" "${C_BENCH[@]}" "${OPT_BENCH[@]}")
   # 必须显式传后缀：run_a_tier_api.py 会从模型名自己推导，SUFFIX=xxx 不传下去
   # 就静默失效，导致补跑去读 eval_*_<推导后缀>/ 而找不到本次结果（2026-10-04 踩到过）。
   LMMS_MAX_REQUEST_MB="$MAX_MB" "$PY" run_a_tier_api.py \
@@ -335,7 +341,7 @@ do_judge() {
 do_status() {
   echo "=== $MODEL (后缀 $SUFFIX) ==="
   local any=0
-  for b in "${A_BENCH[@]}" "${B_BENCH[@]}" "${C_BENCH[@]}"; do
+  for b in "${A_BENCH[@]}" "${B_BENCH[@]}" "${C_BENCH[@]}" "${OPT_BENCH[@]}"; do
     for d in "eval_A_${b}_${SUFFIX}" "eval_B_${b}_${SUFFIX}" "eval_C_${b}_${SUFFIX}"; do
       [ -d "$d" ] || continue
       any=1
