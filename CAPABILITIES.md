@@ -9,6 +9,8 @@
 - 能力分 = 该能力下所有题的逐题准确率（答对题数 / 总题数）；子任务 → 来源、来源 → 能力两层都按题数加权。
   A capability score is per-question accuracy over every question mapped to it; both aggregation levels are weighted by question count.
 - 唯一例外 #46：可读 / 不可读两类等权。 The one exception is #46, where the readable and unreadable classes are weighted equally.
+- 总分 = 47 项能力等权平均（多行能力先按题数合成一个分）；各级节点分 = 节点下能力等权平均；不扣随机基线、不按优先级加权，见 `summary_capability_overall.csv`。
+  The overall score is the unweighted mean of the 47 capabilities (multi-row capabilities are first merged by question count); each hierarchy node is the unweighted mean of its capabilities; no chance correction, no priority weights.
 - 不同口径（A/B 档全量、C 档类别均衡采样、文本化、LLM judge 等）不混合平均，分行给出；#9 与 #35 按 xlsx 要求拆行。
   Sources with different scoring calibers (full A/B tier, class-balanced C tier, textualized, LLM-judged, …) are not averaged together and appear as separate rows; #9 and #35 are split by design.
 - 来源标 `[C]` 的为 C 档（类别均衡采样）。 Sources marked `[C]` come from the class-balanced C tier.

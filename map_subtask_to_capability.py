@@ -381,12 +381,63 @@ def build(src: pathlib.Path, missing_ok: bool = False):
     return models, rows, agg_rows
 
 
+LEVELS = ("一级能力", "二级能力", "三级能力", "四级能力")
+OVERALL_FIELDS = ["层级", "节点", "能力数", "题数"]
+
+
+def overall(models: list[str], agg_rows: list[dict]) -> list[dict]:
+    """能力合并行 → 总分与各级节点分（2026-10-25 定）。
+
+    每项能力先合成一个分：拆成多行的（不同口径 / 部分）按题数合并。总分 = 47 项能力等权平均；
+    一至四级节点分 = 节点下各项能力等权平均（层级不均衡，不逐级合成）。不扣随机基线、不按优先级加权。
+    某模型缺任一项能力时，含该能力的节点与总分留空。总分附 95% 区间半宽：各能力按二项分布估方差 p(1-p)/n。
+    """
+    caps: dict[str, dict] = {}
+    for r in agg_rows:
+        c = caps.setdefault(r["#"], {"path": tuple(r[k] for k in LEVELS), "rows": []})
+        c["rows"].append(r)
+    score: dict[str, dict[str, float | None]] = {}
+    nq: dict[str, int] = {}
+    for num, c in caps.items():
+        nq[num] = sum(int(r["题数"]) for r in c["rows"] if str(r["题数"]).strip())
+        score[num] = {}
+        for m in models:
+            v = _wmean([(r.get("题数"), _f(r[m])) for r in c["rows"]], f"#{num} 总分合成")
+            score[num][m] = float(v) if v else None
+
+    def node(nums: list[str], level: str, name: str) -> dict:
+        row = {"层级": level, "节点": name, "能力数": len(nums), "题数": sum(nq[n] for n in nums)}
+        for m in models:
+            vs = [score[n][m] for n in nums]
+            row[m] = f"{sum(vs) / len(vs):.2f}" if all(v is not None for v in vs) else ""
+        return row
+
+    nums = sorted(caps, key=int)
+    out = [node(nums, "总分", "全部能力")]
+    ci = {"层级": "总分", "节点": "95% 区间半宽 (±)", "能力数": len(nums), "题数": out[0]["题数"]}
+    for m in models:
+        vs = [(score[n][m], nq[n]) for n in nums]
+        if all(v is not None and q for v, q in vs):
+            var = sum((v / 100) * (1 - v / 100) / q for v, q in vs) / len(vs) ** 2
+            ci[m] = f"{1.96 * var ** 0.5 * 100:.2f}"
+        else:
+            ci[m] = ""
+    out.append(ci)
+    for depth, level in enumerate(LEVELS, 1):
+        groups: dict[tuple, list[str]] = {}
+        for n in nums:
+            groups.setdefault(caps[n]["path"][:depth], []).append(n)
+        out += [node(g, level, " › ".join(k)) for k, g in groups.items()]
+    return out
+
+
 def write_outputs(src: pathlib.Path, out_dir: pathlib.Path,
                   missing_ok: bool = False) -> tuple[int, int]:
     models, rows, agg_rows = build(src, missing_ok)
     out_dir.mkdir(parents=True, exist_ok=True)
     _write(out_dir / "summary_capability.csv", DETAIL_FIELDS, models, rows)
     _write(out_dir / "summary_capability_agg.csv", AGG_FIELDS, models, agg_rows)
+    _write(out_dir / "summary_capability_overall.csv", OVERALL_FIELDS, models, overall(models, agg_rows))
     return len(rows), len(agg_rows)
 
 
@@ -409,6 +460,7 @@ def main() -> None:
           f"（{n_detail} 行：能力 × benchmark）")
     print(f"写出 {pathlib.Path(args.out_dir) / 'summary_capability_agg.csv'}  "
           f"（{n_agg} 行：能力合并）")
+    print(f"写出 {pathlib.Path(args.out_dir) / 'summary_capability_overall.csv'}  （总分与各级节点分）")
 
 
 if __name__ == "__main__":

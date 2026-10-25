@@ -639,6 +639,7 @@ def main() -> None:
         n_detail, n_agg = msc.write_outputs(out / "summary_subtasks.csv", out)
         print(f"  写入 {out / 'summary_capability.csv'}  ({n_detail} 行)")
         print(f"  写入 {out / 'summary_capability_agg.csv'}  ({n_agg} 能力)")
+        print(f"  写入 {out / 'summary_capability_overall.csv'}  (总分与各级节点分)")
     except SystemExit as exc:
         print(f"  [warn] 能力分数表生成失败：{exc}")
     except Exception as exc:
