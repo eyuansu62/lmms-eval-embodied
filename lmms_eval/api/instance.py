@@ -13,6 +13,11 @@ class TokenCounts:
     input_tokens: Optional[int] = None
     output_tokens: Optional[int] = None
     reasoning_tokens: Optional[int] = None
+    # Upstream that actually served the request (OpenRouter routes one model id to several providers,
+    # some of which silently drop image/video parts) and the resolved model id. Not token counts, but
+    # they ride along so they land in every sample record.
+    provider: Optional[str] = None
+    served_model: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Optional[int]]:
         d: Dict[str, Optional[int]] = {}
@@ -22,6 +27,10 @@ class TokenCounts:
             d["output_tokens"] = self.output_tokens
         if self.reasoning_tokens is not None:
             d["reasoning_tokens"] = self.reasoning_tokens
+        if self.provider is not None:
+            d["provider"] = self.provider
+        if self.served_model is not None:
+            d["served_model"] = self.served_model
         return d
 
 

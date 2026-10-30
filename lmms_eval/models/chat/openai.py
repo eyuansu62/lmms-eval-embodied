@@ -54,7 +54,10 @@ def _collect_stream(stream) -> SimpleNamespace:
     parts = []
     usage = None
     finish_reason = None
+    provider = served_model = None
     for chunk in stream:
+        provider = getattr(chunk, "provider", None) or provider
+        served_model = getattr(chunk, "model", None) or served_model
         if chunk.choices:
             choice = chunk.choices[0]
             delta = getattr(choice, "delta", None)
@@ -83,7 +86,7 @@ def _collect_stream(stream) -> SimpleNamespace:
 
     _raise_if_empty(text, finish_reason, completion_tokens)
     message = SimpleNamespace(content=text)
-    return SimpleNamespace(choices=[SimpleNamespace(message=message)], usage=usage)
+    return SimpleNamespace(choices=[SimpleNamespace(message=message)], usage=usage, provider=provider, model=served_model)
 
 
 def _raise_if_empty(text, finish_reason, completion_tokens) -> None:
@@ -157,7 +160,7 @@ class OpenAICompatible(OpenAICompatibleSimple):
 
         def process_single_request(local_index: int, payload: dict | None):
             if payload is None:
-                return "", local_index, False, False, 0.0, 0, 0, 0
+                return "", local_index, False, False, 0.0, 0, 0, 0, None, None
             started_at = time.time()
             rate_limited = False
             last_error_msg = "unknown error"
@@ -203,6 +206,8 @@ class OpenAICompatible(OpenAICompatibleSimple):
                         completion_tokens,
                         input_tokens,
                         reasoning_tokens,
+                        getattr(response, "provider", None),
+                        getattr(response, "model", None),
                     )
                 except Exception as exc:
                     error_msg = str(exc)
@@ -217,7 +222,7 @@ class OpenAICompatible(OpenAICompatibleSimple):
             elapsed = time.time() - started_at
             error_preview = last_error_msg.replace("\n", " ")[:200]
             failure_content = f"[LMMS_EVAL_REQUEST_FAILED after {self.max_retries} retries] {error_preview}"
-            return failure_content, local_index, False, rate_limited, elapsed, 0, 0, 0
+            return failure_content, local_index, False, rate_limited, elapsed, 0, 0, 0, None, None
 
         def maybe_update_concurrency(force: bool = False) -> None:
             nonlocal current_concurrency
@@ -337,6 +342,8 @@ class OpenAICompatible(OpenAICompatibleSimple):
                         completion_tokens,
                         input_tokens,
                         reasoning_tokens,
+                        provider,
+                        served_model,
                     ) = future.result()
                     in_flight.pop(future, None)
                     responses[local_index] = GenerationResult(
@@ -345,6 +352,8 @@ class OpenAICompatible(OpenAICompatibleSimple):
                             input_tokens=input_tokens,
                             output_tokens=completion_tokens,
                             reasoning_tokens=reasoning_tokens,
+                            provider=provider,
+                            served_model=served_model,
                         ),
                     )
                     total_latency += elapsed
